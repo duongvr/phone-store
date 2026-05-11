@@ -1,0 +1,44 @@
+{#include admin/admin-layout pageTitle="Quản lý Đơn hàng" activeMenu="orders"}
+{#title}Quản lý Đơn hàng - Admin{/title}
+
+{#body}
+<div class="admin-card">
+  <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+    <select style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+      <option value="">Tất cả trạng thái</option>
+      <option value="PENDING">Chờ xác nhận</option>
+      <option value="SHIPPING">Đang giao</option>
+      <option value="DELIVERED">Đã giao</option>
+    </select>
+    <button class="btn btn-primary">Lọc</button>
+  </div>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Mã ĐH</th>
+      <th>Khách hàng</th>
+      <th>Ngày đặt</th>
+      <th>Tổng tiền</th>
+      <th>Trạng thái</th>
+      <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td style="font-weight: bold;">#ORD-9981</td>
+      <td>Nguyễn Văn A<br><span style="font-size: 12px; color: #666;">0987654321</span></td>
+      <td>11/05/2026 08:30</td>
+      <td style="color: #e74c3c; font-weight: bold;">62.490.000 ₫</td>
+      <td>
+        <span style="background: #fff3cd; color: #d35400; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">Chờ xác nhận</span>
+      </td>
+      <td>
+        <a href="/admin/orders/9981" class="btn btn-success">Duyệt đơn</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+{/body}
+{/include}

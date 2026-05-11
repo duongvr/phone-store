@@ -1,0 +1,49 @@
+{#include admin/admin-layout pageTitle="Quản lý Sản phẩm" activeMenu="products"}
+{#title}Quản lý Sản phẩm - Admin{/title}
+
+{#body}
+<div class="admin-card">
+  <div style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center;">
+    <input type="text" placeholder="Tìm kiếm sản phẩm..." style="padding: 10px; width: 300px; border: 1px solid #ddd; border-radius: 4px;">
+    <button class="btn btn-primary">+ Thêm Sản phẩm mới</button>
+  </div>
+
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Hình ảnh</th>
+      <th>Tên sản phẩm</th>
+      <th>Giá bán</th>
+      <th>Tồn kho</th>
+      <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>#SP001</td>
+      <td><img src="/images/products/iphone15.jpg" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" onerror="this.src='https://via.placeholder.com/50'"></td>
+      <td style="font-weight: 600;">iPhone 15 Pro Max 256GB</td>
+      <td>32.990.000 ₫</td>
+      <td><span style="color: #27ae60; font-weight: bold;">24</span></td>
+      <td>
+        <a href="/admin/products/edit/1" class="btn btn-primary">Sửa</a>
+        <button class="btn btn-danger">Xóa</button>
+      </td>
+    </tr>
+    <tr>
+      <td>#SP002</td>
+      <td><img src="/images/products/s24.jpg" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" onerror="this.src='https://via.placeholder.com/50'"></td>
+      <td style="font-weight: 600;">Samsung Galaxy S24 Ultra</td>
+      <td>29.500.000 ₫</td>
+      <td><span style="color: #e74c3c; font-weight: bold;">0</span></td>
+      <td>
+        <a href="/admin/products/edit/2" class="btn btn-primary">Sửa</a>
+        <button class="btn btn-danger">Xóa</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+{/body}
+{/include}

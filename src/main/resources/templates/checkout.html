@@ -1,0 +1,80 @@
+{#include layout}
+{#title}Thanh toán - Phone Store{/title}
+
+{#head}
+<style>
+  .checkout-container {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr;
+    gap: 30px;
+    margin: 40px 0;
+  }
+
+  .section-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+  }
+
+  .payment-option {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+
+  .btn-place-order {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+</style>
+{/head}
+
+{#body}
+<div class="page-title">
+  <div class="container">
+    <h2>Thanh toán an toàn</h2>
+  </div>
+</div>
+<div class="container checkout-container">
+  <div class="main-checkout">
+    <div class="section-card">
+      <h3 style="margin-bottom:15px;">📍 Địa chỉ nhận hàng</h3>
+      <div style="padding:15px; border:1px solid #667eea; border-radius:8px; background:#f8f9ff;">
+        <strong>Nguyễn Văn A - 0987654321</strong><br>
+        Số 123, Đường Lê Lợi, Quận 1, TP. Hồ Chí Minh
+      </div>
+    </div>
+    <div class="section-card">
+      <h3 style="margin-bottom:15px;">💳 Phương thức thanh toán</h3>
+      <label class="payment-option"><input type="radio" name="pay" checked> Thanh toán khi nhận hàng (COD)</label>
+      <label class="payment-option"><input type="radio" name="pay"> Thẻ tín dụng / Ví điện tử</label>
+    </div>
+  </div>
+
+  <div class="order-summary">
+    <div class="section-card">
+      <h3>Tóm tắt đơn hàng</h3>
+      <div style="display:flex; justify-content:space-between; margin:20px 0;">
+        <span>Tạm tính:</span><span>62.490.000 ₫</span>
+      </div>
+      <div
+        style="display:flex; justify-content:space-between; font-size:20px; font-weight:700; color:#e74c3c; margin-bottom:20px;">
+        <span>Tổng cộng:</span><span>62.490.000 ₫</span>
+      </div>
+      <button class="btn-place-order">XÁC NHẬN ĐẶT HÀNG</button>
+    </div>
+  </div>
+</div>
+{/body}
+{/include}

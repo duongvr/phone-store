@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{#insert title}Phone Store{/insert}</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header & Nav */
+        header {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        /* Main */
+        main {
+            min-height: 70vh;
+            padding: 30px 0;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            padding: 40px 0;
+            margin-top: 50px;
+            text-align: center;
+        }
+    </style>
+
+    {#insert head}
+    {/insert}
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <nav>
+            <a href="/" class="logo">📱 PHONE STORE</a>
+
+            <ul class="nav-links">
+                <li><a href="/">Trang chủ</a></li>
+                <li><a href="/products">Sản phẩm</a></li>
+                <li><a href="/promotions">Khuyến mãi</a></li>
+                <li><a href="/orders">Đơn hàng</a></li>
+                <li><a href="/cart">🛒 Giỏ hàng</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    {#insert body}
+    <p>Nội dung đang được cập nhật...</p>
+    {/insert}
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2024 Phone Store. All rights reserved.</p>
+        <p>Địa chỉ: 123 Đường ABC, Hà Nội</p>
+    </div>
+</footer>
+
+</body>
+</html>

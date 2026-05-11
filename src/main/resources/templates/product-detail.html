@@ -1,0 +1,113 @@
+{#include layout}
+{#title}{#if product}{product.name}{#else}Chi tiết sản phẩm{/if} - Phone Store{/title}
+
+{#head}
+<style>
+  .breadcrumb {
+    margin: 25px 0;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .product-detail-container {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .main-image {
+    width: 100%;
+    height: 400px;
+    object-fit: contain;
+    border: 1px solid #eee;
+    border-radius: 10px;
+  }
+
+  .current-price {
+    color: #e74c3c;
+    font-size: 34px;
+    font-weight: bold;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .btn-buy {
+    flex: 1;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .product-details-section {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-top: 40px;
+    margin-bottom: 50px;
+  }
+
+  .tabs {
+    display: flex;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 20px;
+  }
+
+  .tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+  }
+
+  .tab.active {
+    color: #667eea;
+    border-color: #667eea;
+  }
+</style>
+{/head}
+
+{#body}
+<div class="container">
+  <div class="breadcrumb">
+    <a href="/">Trang chủ</a> > <a href="/products">Sản phẩm</a> > {#if product}{product.name}{/if}
+  </div>
+
+  {#if product}
+  <div class="product-detail-container">
+    <div>
+      <img id="mainImage" src="{product.imageUrl}" class="main-image" />
+    </div>
+    <div>
+      <h1 style="font-size: 30px; margin-bottom: 10px;">{product.name}</h1>
+      <div style="background: #fafafa; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+        <div class="current-price">{product.price.toLocaleString('vi-VN')} ₫</div>
+      </div>
+      <div class="action-buttons">
+        <button class="btn-buy" id="addToCartBtn"
+          style="background: white; color: #667eea; border: 2px solid #667eea;">🛒 Thêm vào giỏ</button>
+        <button class="btn-buy" onclick="window.location.href='/checkout'">Mua ngay</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-details-section">
+    <div class="tabs">
+      <div class="tab active">Mô tả chi tiết</div>
+    </div>
+    <div>{product.description}</div>
+  </div>
+  {/if}
+</div>
+{/body}
+{/include}

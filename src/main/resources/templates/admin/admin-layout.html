@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title || 'Admin - Phone Store'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; height: 100vh; background-color: #f4f6f9; }
+
+    /* Sidebar */
+    .sidebar { width: 260px; background-color: #343a40; color: white; display: flex; flex-direction: column; }
+    .sidebar-brand { padding: 20px; font-size: 20px; font-weight: bold; text-align: center; border-bottom: 1px solid #4b545c; background: #2c3136; }
+    .sidebar-menu { list-style: none; padding: 10px 0; flex: 1; }
+    .sidebar-menu a { display: block; padding: 15px 20px; color: #c2c7d0; text-decoration: none; border-left: 4px solid transparent; transition: 0.2s; }
+    .sidebar-menu a:hover, .sidebar-menu a.active { background-color: #494e53; color: white; border-left-color: #667eea; }
+
+    /* Main Content */
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar { background: white; padding: 15px 30px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+    .content-area { padding: 30px; flex: 1; overflow-y: auto; }
+
+    /* Tables & Buttons */
+    .admin-card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f9fa; font-weight: 600; color: #333; }
+    .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block; font-size: 14px; }
+    .btn-primary { background: #667eea; color: white; }
+    .btn-danger { background: #e74c3c; color: white; }
+    .btn-success { background: #27ae60; color: white; }
+  </style>
+  {#insert head}{/insert}
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-brand">⚙️ Admin Panel</div>
+  <ul class="sidebar-menu">
+    <li><a href="/admin/dashboard" class="{#if activeMenu == 'dashboard'}active{/if}">📊 Tổng quan</a></li>
+    <li><a href="/admin/products" class="{#if activeMenu == 'products'}active{/if}">📱 Quản lý Sản phẩm</a></li>
+    <li><a href="/admin/orders" class="{#if activeMenu == 'orders'}active{/if}">🛒 Quản lý Đơn hàng</a></li>
+    <li><a href="/admin/users" class="{#if activeMenu == 'users'}active{/if}">👥 Quản lý Người dùng</a></li>
+    <li><a href="/admin/promotions" class="{#if activeMenu == 'promotions'}active{/if}">🎁 Quản lý Khuyến mãi</a></li>
+    <li style="margin-top: 20px; border-top: 1px solid #4b545c;">
+      <a href="/">🔙 Quay lại Website</a>
+    </li>
+  </ul>
+</div>
+
+<div class="main-wrapper">
+  <div class="topbar">
+    <h2 style="font-size: 20px; color: #333;">{pageTitle || 'Bảng điều khiển'}</h2>
+    <div>
+      Xin chào, <strong>Quản trị viên</strong> | <a href="/logout" style="color: #e74c3c; text-decoration: none; margin-left: 10px;">Đăng xuất</a>
+    </div>
+  </div>
+  <div class="content-area">
+    {#insert body}{/insert}
+  </div>
+</div>
+</body>
+</html>

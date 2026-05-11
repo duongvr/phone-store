@@ -1,0 +1,56 @@
+{#include layout}
+{#title}Khuyến mãi hot - Phone Store{/title}
+
+{#head}
+<style>
+  .promo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    margin: 40px 0;
+  }
+
+  .promo-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s;
+  }
+
+  .promo-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .promo-banner {
+    height: 180px;
+    background: linear-gradient(45deg, #f093fb, #f5576c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 24px;
+  }
+</style>
+{/head}
+
+{#body}
+<div class="page-title"
+  style="background: linear-gradient(135deg, #f093fb, #f5576c); color:white; padding:50px 0; text-align:center;">
+  <h2>🎉 Ưu Đãi Cực Khủng 🎉</h2>
+</div>
+<div class="container">
+  <div class="promo-grid">
+    <div class="promo-card">
+      <div class="promo-banner">SALE 50% PHỤ KIỆN</div>
+      <div style="padding:20px;">
+        <h3>Phụ kiện đồng giá 99k</h3>
+        <p style="color:#666; margin:10px 0;">Áp dụng cho cáp sạc, tai nghe và ốp lưng tại cửa hàng.</p>
+        <a href="/products" style="color:#667eea; font-weight:600;">Xem sản phẩm -></a>
+      </div>
+    </div>
+  </div>
+</div>
+{/body}
+{/include}

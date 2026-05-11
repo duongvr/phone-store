@@ -1,0 +1,122 @@
+{#include layout}
+{#title}Đăng ký tài khoản - Phone Store{/title}
+
+{#head}
+<style>
+  .auth-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  .auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .auth-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    text-align: center;
+    color: #333;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.3s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: transform 0.2s;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+  }
+
+  .auth-links {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+
+  .auth-links a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+  }
+</style>
+{/head}
+
+{#body}
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="auth-title">Đăng ký tài khoản</h2>
+    <form action="/api/users/register" method="POST" id="registerForm">
+      <div class="form-group">
+        <label for="fullName">Họ và tên</label>
+        <input type="text" id="fullName" name="fullName" placeholder="Nhập họ và tên" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Nhập địa chỉ email" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Số điện thoại</label>
+        <input type="tel" id="phone" name="phone" placeholder="Nhập số điện thoại" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Mật khẩu</label>
+        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">Xác nhận mật khẩu</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Nhập lại mật khẩu" required>
+      </div>
+      <button type="submit" class="btn-submit">Đăng ký ngay</button>
+    </form>
+    <div class="auth-links">
+      Đã có tài khoản? <a href="/login">Đăng nhập ngay</a>
+    </div>
+  </div>
+</div>
+{/body}
+{/include}
