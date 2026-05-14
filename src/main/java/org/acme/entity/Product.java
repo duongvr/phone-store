@@ -16,53 +16,53 @@ import lombok.NoArgsConstructor;
 public class Product extends PanacheEntity {
 
   @Column(nullable = false, length = 150)
-  public String name;
+  private String name;
 
   @Column(columnDefinition = "TEXT")
-  public String description;
+  private String description;
 
   @Column(nullable = false)
-  public Double price;
+  private Double price;
 
   @Column(name = "original_price")
-  public Double originalPrice;
+  private Double originalPrice;
 
   @Column(name = "discount")
-  public Integer discount = 0;
+  private Integer discount = 0;
 
   @Column(name = "image_url", length = 255)
-  public String imageUrl;
+  private String imageUrl;
 
   @Column(nullable = false)
-  public Integer stock = 0;
+  private Integer stock = 0;
 
   @Column(length = 50)
-  public String brand;
+  private String brand;
 
   @Column(name = "rating")
-  public Double rating = 0.0;
+  private Double rating = 0.0;
 
   @Column(name = "review_count")
-  public Integer reviewCount = 0;
+  private Integer reviewCount = 0;
 
   @ManyToOne
   @JoinColumn(name = "category_id", nullable = false)
-  public Category category;
+  private Category category;
 
   @Column(columnDefinition = "JSON")
-  public String specifications;
+  private String specifications;
 
   @Column(columnDefinition = "TEXT")
-  public String warranty;
+  private String warranty;
 
   @Column(nullable = false)
-  public Boolean featured = false;
+  private Boolean featured = false;
 
   @Column(name = "created_at")
-  public Long createdAt;
+  private Long createdAt;
 
   @Column(name = "updated_at")
-  public Long updatedAt;
+  private Long updatedAt;
 
   @PrePersist
   protected void onCreate() {

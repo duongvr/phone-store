@@ -21,172 +21,129 @@ public class AddressService {
   @Inject
   UserRepository userRepository;
 
-  /**
-   * Get all addresses for a user
-   */
   @Transactional
   public List<AddressDTO> getUserAddresses(Long userId) {
     return addressRepository.find("user.id", userId)
-        .list()
-        .stream()
-        .map(this::toDTO)
-        .collect(Collectors.toList());
+            .list()
+            .stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
   }
 
-  /**
-   * Get address by ID
-   */
   @Transactional
   public AddressDTO getAddressById(Long id) {
     Address address = addressRepository.findById(id);
     return address != null ? toDTO(address) : null;
   }
 
-  /**
-   * Get default address for user
-   */
   @Transactional
   public AddressDTO getDefaultAddress(Long userId) {
     Address address = addressRepository.find("user.id = ?1 and isDefault = true", userId)
-        .firstResult();
+            .firstResult();
     return address != null ? toDTO(address) : null;
   }
 
-  /**
-   * Create new address
-   */
+  @Transactional
+  public void setDefaultAddress(Long userId, Long addressId) {
+    List<Address> addresses = addressRepository.find("user.id", userId).list();
+    addresses.forEach(a -> a.setIsDefault(false));
+
+    Address target = addressRepository.findById(addressId);
+    if (target == null || !target.getUser().id.equals(userId)) {
+      throw new IllegalArgumentException("Địa chỉ không tồn tại hoặc không thuộc về người dùng");
+    }
+
+    target.setIsDefault(true);
+    addressRepository.persist(target);
+  }
+
   @Transactional
   public AddressDTO createAddress(Long userId, AddressDTO dto) {
     User user = userRepository.findById(userId);
-    if (user == null) {
-      throw new IllegalArgumentException("User not found");
-    }
+    if (user == null) throw new IllegalArgumentException("Không tìm thấy người dùng");
 
-    // Validate input
-    if (dto.getFullName() == null || dto.getFullName().isEmpty()) {
-      throw new IllegalArgumentException("Full name is required");
-    }
-    if (dto.getPhone() == null || dto.getPhone().isEmpty()) {
-      throw new IllegalArgumentException("Phone is required");
-    }
-    if (dto.getAddress() == null || dto.getAddress().isEmpty()) {
-      throw new IllegalArgumentException("Address is required");
-    }
+    if (dto.getFullName() == null || dto.getFullName().isEmpty())
+      throw new IllegalArgumentException("Họ tên không bỏ trống");
+    if (dto.getPhone() == null || dto.getPhone().isEmpty())
+      throw new IllegalArgumentException("Số điện thoại không bỏ trống");
+    if (dto.getAddress() == null || dto.getAddress().isEmpty())
+      throw new IllegalArgumentException("Địa chỉ không bỏ trống");
 
     Address address = new Address();
-    address.user = user;
-    address.name = dto.getName();
-    address.fullName = dto.getFullName();
-    address.phone = dto.getPhone();
-    address.address = dto.getAddress();
-    address.city = dto.getCity();
-    address.district = dto.getDistrict();
-    address.ward = dto.getWard();
-    address.postalCode = dto.getPostalCode();
-    address.isDefault = dto.getIsDefault() != null ? dto.getIsDefault() : false;
+    address.setUser(user);
+    address.setName(dto.getName());
+    address.setFullName(dto.getFullName());
+    address.setPhone(dto.getPhone());
+    address.setAddress(dto.getAddress());
+    address.setCity(dto.getCity());
+    address.setDistrict(dto.getDistrict());
+    address.setWard(dto.getWard());
+    address.setPostalCode(dto.getPostalCode());
+    address.setIsDefault(dto.getIsDefault() != null ? dto.getIsDefault() : false);
 
-    // If this is the first address or marked as default, set it as default
-    if (address.isDefault) {
-      // Unset other default addresses
+    if (address.getIsDefault()) {
       addressRepository.find("user.id = ?1 and isDefault = true", userId)
-          .list()
-          .forEach(addr -> {
-            addr.isDefault = false;
-            addressRepository.persist(addr);
-          });
+              .list()
+              .forEach(a -> {
+                a.setIsDefault(false);
+                addressRepository.persist(a);
+              });
     }
 
     addressRepository.persist(address);
     return toDTO(address);
   }
 
-  /**
-   * Update address
-   */
   @Transactional
   public AddressDTO updateAddress(Long id, AddressDTO dto) {
     Address address = addressRepository.findById(id);
-    if (address == null) {
-      throw new IllegalArgumentException("Address not found");
-    }
+    if (address == null) throw new IllegalArgumentException("Không tìm thấy địa chỉ");
 
-    address.name = dto.getName();
-    address.fullName = dto.getFullName();
-    address.phone = dto.getPhone();
-    address.address = dto.getAddress();
-    address.city = dto.getCity();
-    address.district = dto.getDistrict();
-    address.ward = dto.getWard();
-    address.postalCode = dto.getPostalCode();
+    address.setName(dto.getName());
+    address.setFullName(dto.getFullName());
+    address.setPhone(dto.getPhone());
+    address.setAddress(dto.getAddress());
+    address.setCity(dto.getCity());
+    address.setDistrict(dto.getDistrict());
+    address.setWard(dto.getWard());
+    address.setPostalCode(dto.getPostalCode());
 
-    // Handle default address change
-    if (dto.getIsDefault() != null && dto.getIsDefault() && !address.isDefault) {
-      // Unset other default addresses for this user
-      addressRepository.find("user.id = ?1 and isDefault = true", address.user.id)
-          .list()
-          .forEach(addr -> {
-            addr.isDefault = false;
-            addressRepository.persist(addr);
-          });
-      address.isDefault = true;
+    if (dto.getIsDefault() != null && dto.getIsDefault() && !address.getIsDefault()) {
+      addressRepository.find("user.id = ?1 and isDefault = true", address.getUser().id)
+              .list()
+              .forEach(a -> {
+                a.setIsDefault(false);
+                addressRepository.persist(a);
+              });
+      address.setIsDefault(true);
     } else if (dto.getIsDefault() != null) {
-      address.isDefault = dto.getIsDefault();
+      address.setIsDefault(dto.getIsDefault());
     }
 
     addressRepository.persist(address);
     return toDTO(address);
   }
 
-  /**
-   * Delete address
-   */
   @Transactional
   public void deleteAddress(Long id) {
     Address address = addressRepository.findById(id);
-    if (address == null) {
-      throw new IllegalArgumentException("Address not found");
-    }
+    if (address == null) throw new IllegalArgumentException("Không tìm thấy địa chỉ");
     addressRepository.delete(address);
   }
 
-  /**
-   * Set address as default
-   */
-  @Transactional
-  public void setDefaultAddress(Long userId, Long addressId) {
-    Address address = addressRepository.findById(addressId);
-    if (address == null) {
-      throw new IllegalArgumentException("Address not found");
-    }
-
-    if (!address.user.id.equals(userId)) {
-      throw new IllegalArgumentException("Address does not belong to this user");
-    }
-
-    // Unset other default addresses
-    addressRepository.find("user.id = ?1 and isDefault = true", userId)
-        .list()
-        .forEach(addr -> {
-          addr.isDefault = false;
-          addressRepository.persist(addr);
-        });
-
-    address.isDefault = true;
-    addressRepository.persist(address);
-  }
-
   private AddressDTO toDTO(Address address) {
-    return new AddressDTO(
-        address.id,
-        address.user != null ? address.user.id : null,
-        address.name,
-        address.fullName,
-        address.phone,
-        address.address,
-        address.city,
-        address.district,
-        address.ward,
-        address.postalCode,
-        address.isDefault);
+    AddressDTO dto = new AddressDTO();
+    dto.setId(address.id);
+    dto.setUserId(address.getUser().id);
+    dto.setName(address.getName());
+    dto.setFullName(address.getFullName());
+    dto.setPhone(address.getPhone());
+    dto.setAddress(address.getAddress());
+    dto.setCity(address.getCity());
+    dto.setDistrict(address.getDistrict());
+    dto.setWard(address.getWard());
+    dto.setPostalCode(address.getPostalCode());
+    dto.setIsDefault(address.getIsDefault());
+    return dto;
   }
 }

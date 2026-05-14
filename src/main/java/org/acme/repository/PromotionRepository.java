@@ -1,4 +1,11 @@
 package org.acme.repository;
 
-public class PromotionRepository {
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.acme.entity.Promotion;
+
+@ApplicationScoped
+public class PromotionRepository implements PanacheRepository<Promotion> {
+
 }
+

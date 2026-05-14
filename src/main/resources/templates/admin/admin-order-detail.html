@@ -1,0 +1,128 @@
+{#include admin/admin-layout pageTitle="Chi tiết Đơn hàng" activeMenu="orders"}
+{#title}Chi tiết Đơn hàng - Admin{/title}
+
+{#body}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;" id="orderDetailContent">
+    <div class="admin-card" style="text-align: center; padding: 50px;">
+        Đang tải thông tin đơn hàng...
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const pathParts = window.location.pathname.split('/');
+        const orderId = pathParts[pathParts.length - 1];
+        if (orderId && !isNaN(orderId)) {
+            loadOrderDetail(orderId);
+        } else {
+            showToast("ID đơn hàng không hợp lệ", "error");
+        }
+    });
+
+    async function loadOrderDetail(id) {
+        try {
+            const res = await fetch(API + "/orders/" + id, { headers: getAuthHeader() });
+            if (res.ok) {
+                const order = await res.json();
+                renderOrderDetail(order);
+            } else {
+                document.getElementById("orderDetailContent").innerHTML = '<div class="admin-card" style="color:red; text-align:center; padding:50px;">Không tìm thấy đơn hàng</div>';
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function renderOrderDetail(order) {
+        const statusStyle = getStatusStyle(order.status);
+        let itemsHtml = '';
+        order.items.forEach(item => {
+            itemsHtml += `
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="$\{item.productImage || '/images/placeholder.png'}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                            <strong>$\{item.productName}</strong>
+                        </div>
+                    </td>
+                    <td>$\{formatPrice(item.price)}</td>
+                    <td>$\{item.quantity}</td>
+                    <td style="font-weight: bold;">$\{formatPrice(item.price * item.quantity)}</td>
+                </tr>
+            `;
+        });
+
+        const html = `
+            <div class="admin-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <h3>Đơn hàng #$\{order.id}</h3>
+                    <span style="background: $\{statusStyle.bg}; color: $\{statusStyle.color}; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px;">
+                        $\{statusStyle.label}
+                    </span>
+                </div>
+
+                <table style="margin-bottom: 20px;">
+                    <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th>SL</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                    </thead>
+                    <tbody>$\{itemsHtml}</tbody>
+                </table>
+
+                <div style="text-align: right; font-size: 16px;">
+                    <p style="margin-bottom: 5px;">Tạm tính: $\{formatPrice(order.totalPrice)}</p>
+                    <p style="margin-bottom: 5px;">Phí vận chuyển: $\{formatPrice(0)}</p>
+                    <p style="font-size: 20px; font-weight: bold; color: #e74c3c; margin-top: 10px;">Tổng cộng: $\{formatPrice(order.totalPrice)}</p>
+                </div>
+            </div>
+
+            <div>
+                <div class="admin-card" style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Thông tin khách hàng</h3>
+                    <p style="margin-bottom: 8px;"><strong>Họ tên:</strong> $\{order.customerName || 'N/A'}</p>
+                    <p style="margin-bottom: 8px;"><strong>SĐT:</strong> $\{order.customerPhone || 'N/A'}</p>
+                    <p style="margin-bottom: 8px;"><strong>Địa chỉ:</strong> $\{order.shippingAddress || 'N/A'}</p>
+                    <p style="margin-bottom: 8px;"><strong>Ngày đặt:</strong> $\{new Date(order.createdAt).toLocaleString('vi-VN')}</p>
+                    <p style="margin-bottom: 8px;"><strong>Ghi chú:</strong> $\{order.note || 'Không có'}</p>
+                </div>
+
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Cập nhật trạng thái</h3>
+                    <select id="statusSelect" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="PENDING" $\{order.status === 'PENDING' ? 'selected' : ''}>Chờ xác nhận</option>
+                        <option value="CONFIRMED" $\{order.status === 'CONFIRMED' ? 'selected' : ''}>Đã xác nhận</option>
+                        <option value="SHIPPING" $\{order.status === 'SHIPPING' ? 'selected' : ''}>Đang giao hàng</option>
+                        <option value="DELIVERED" $\{order.status === 'DELIVERED' ? 'selected' : ''}>Đã giao thành công</option>
+                        <option value="CANCELLED" $\{order.status === 'CANCELLED' ? 'selected' : ''}>Hủy đơn</option>
+                    </select>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="updateOrderStatus($\{order.id})">Lưu trạng thái</button>
+                </div>
+            </div>
+        `;
+        document.getElementById("orderDetailContent").innerHTML = html;
+    }
+
+    async function updateOrderStatus(id) {
+        const status = document.getElementById("statusSelect").value;
+        try {
+            const res = await fetch(API + "/orders/" + id + "/status?status=" + status, {
+                method: "PATCH",
+                headers: getAuthHeader()
+            });
+            if (res.ok) {
+                showToast("Đã cập nhật trạng thái", "success");
+                loadOrderDetail(id);
+            } else {
+                showToast("Cập nhật thất bại", "error");
+            }
+        } catch (e) {
+            showToast("Lỗi kết nối", "error");
+        }
+    }
+</script>
+{/body}
+{/include}

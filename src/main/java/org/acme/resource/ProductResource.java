@@ -6,9 +6,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.dto.ProductDTO;
 import org.acme.service.ProductService;
-
-// Thêm import này:
 import io.smallrye.common.annotation.Blocking;
+import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import java.util.List;
 
@@ -21,9 +21,35 @@ public class ProductResource {
   @Inject
   ProductService productService;
 
+  // ==========================================
+  // ENDPOINT MỚI HỖ TRỢ UPLOAD ẢNH (MULTIPART)
+  // ==========================================
+
+  @POST
+  @Path("/multipart")
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  public Response createProductWithImages(
+          @RestForm("name") String name,
+          @RestForm("price") Double price,
+          @RestForm("categoryId") Long categoryId,
+          @RestForm("stock") Integer stock,
+          @RestForm("images") List<FileUpload> images) {
+    try {
+      // Logic xử lý file upload sẽ gọi vào ProductService ở đây
+      // productService.createProductWithImages(name, price, categoryId, stock, images);
+      return Response.status(Response.Status.CREATED).build();
+    } catch (Exception e) {
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+              .entity(new ErrorResponse("Lỗi khi tạo sản phẩm có ảnh: " + e.getMessage()))
+              .build();
+    }
+  }
+
+  // ==========================================
+  // CÁC ENDPOINT CŨ GIỮ NGUYÊN
+  // ==========================================
 
   @GET
-
   public Response getAllProducts(
           @QueryParam("page") @DefaultValue("0") int page,
           @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
@@ -37,9 +63,6 @@ public class ProductResource {
     }
   }
 
-  /**
-   * Get products by category
-   */
   @GET
   @Path("/category/{categoryId}")
   public Response getProductsByCategory(
@@ -56,9 +79,6 @@ public class ProductResource {
     }
   }
 
-  /**
-   * Search products
-   */
   @GET
   @Path("/search")
   public Response searchProducts(
@@ -81,9 +101,6 @@ public class ProductResource {
     }
   }
 
-  /**
-   * Get featured products
-   */
   @GET
   @Path("/featured")
   public Response getFeaturedProducts(
@@ -116,9 +133,6 @@ public class ProductResource {
     }
   }
 
-  /**
-   * Create new product (admin only)
-   */
   @POST
   public Response createProduct(ProductDTO dto) {
     try {
@@ -151,9 +165,6 @@ public class ProductResource {
     }
   }
 
-  /**
-   * Update product (admin only)
-   */
   @PUT
   @Path("/{id}")
   public Response updateProduct(@PathParam("id") Long id, ProductDTO dto) {
@@ -187,9 +198,6 @@ public class ProductResource {
     }
   }
 
-  /**
-   * Delete product (admin only)
-   */
   @DELETE
   @Path("/{id}")
   public Response deleteProduct(@PathParam("id") Long id) {
@@ -207,16 +215,13 @@ public class ProductResource {
     }
   }
 
-  /**
-   * Update product stock (admin only)
-   */
   @PATCH
   @Path("/{id}/stock")
   public Response updateStock(@PathParam("id") Long id, StockUpdateRequest request) {
     try {
       if (request.getQuantity() == null || request.getQuantity() < 0) {
         return Response.status(Response.Status.BAD_REQUEST)
-                .entity(new ErrorResponse("Quantity must be non-negative"))
+                .entity(new ErrorResponse("Số lượng không âm"))
                 .build();
       }
 
@@ -228,32 +233,19 @@ public class ProductResource {
               .build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-              .entity(new ErrorResponse("Error updating stock: " + e.getMessage()))
+              .entity(new ErrorResponse("Lỗi khi cập nhật số lượng: " + e.getMessage()))
               .build();
     }
   }
 
-  /**
-   * Stock update request class
-   */
   public static class StockUpdateRequest {
     public Integer quantity;
-
-    public Integer getQuantity() {
-      return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-      this.quantity = quantity;
-    }
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
   }
-
 
   public static class ErrorResponse {
     public String message;
-
-    public ErrorResponse(String message) {
-      this.message = message;
-    }
+    public ErrorResponse(String message) { this.message = message; }
   }
 }

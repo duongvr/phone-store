@@ -1,0 +1,99 @@
+{#include admin/admin-layout pageTitle="Quản lý Khuyến mãi" activeMenu="promotions"}
+{#title}Khuyến mãi - Admin{/title}
+
+{#body}
+<div class="admin-card">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center;">
+        <select id="typeFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;" onchange="loadPromotions()">
+            <option value="">Tất cả loại</option>
+            <option value="VOUCHER">Mã giảm giá (Voucher)</option>
+            <option value="BANNER">Banner Quảng cáo</option>
+        </select>
+        <button class="btn btn-primary" onclick="showToast('Chức năng thêm sẽ sớm ra mắt', 'info')">+ Thêm Khuyến mãi</button>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Mã Code / Tiêu đề</th>
+            <th>Loại giảm</th>
+            <th>Điều kiện</th>
+            <th>Hạn sử dụng</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody id="promotionsBody">
+        <tr>
+            <td colspan="6" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        loadPromotions();
+    });
+
+    async function loadPromotions() {
+        try {
+            const type = document.getElementById("typeFilter").value;
+            let url = API + "/promotions";
+            if (type) url += "?type=" + type;
+            
+            const res = await fetch(url);
+            if (res.ok) {
+                const promos = await res.json();
+                renderPromotions(promos);
+            } else {
+                // Fallback or mock if API doesn't exist yet
+                renderMockPromotions();
+            }
+        } catch (e) {
+            console.error(e);
+            renderMockPromotions();
+        }
+    }
+
+    function renderPromotions(promos) {
+        const body = document.getElementById("promotionsBody");
+        if (!promos || promos.length === 0) {
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không có khuyến mãi nào</td></tr>';
+            return;
+        }
+
+        let html = '';
+        promos.forEach(p => {
+            const date = p.endDate ? new Date(p.endDate).toLocaleDateString('vi-VN') : 'Vô thời hạn';
+            const isActive = !p.endDate || new Date(p.endDate) > new Date();
+            
+            html += `
+                <tr>
+                    <td>
+                        <strong>$\{p.code || p.title}</strong><br>
+                        <span style="font-size:12px; color:#666;">$\{p.description || ''}</span>
+                    </td>
+                    <td>$\{p.discountValue > 100 ? formatPrice(p.discountValue) : p.discountValue + '%'}</td>
+                    <td>$\{p.minOrderValue ? 'Đơn từ ' + formatPrice(p.minOrderValue) : 'Mọi đơn'}</td>
+                    <td>$\{date}</td>
+                    <td><span style="color: $\{isActive ? '#27ae60' : '#e74c3c'}; font-weight: 600;">$\{isActive ? 'Đang chạy' : 'Hết hạn'}</span></td>
+                    <td>
+                        <button class="btn btn-primary" style="font-size: 12px;" onclick="showToast('Sắp có', 'info')">Sửa</button>
+                    </td>
+                </tr>
+            `;
+        });
+        body.innerHTML = html;
+    }
+
+    function renderMockPromotions() {
+        const mock = [
+            { id: 1, code: 'WELCOME100', description: 'Giảm 100k cho user mới', discountValue: 100000, minOrderValue: 500000, endDate: '2026-12-31', type: 'VOUCHER' },
+            { id: 2, title: 'Siêu sale hè', description: 'Giảm 10% toàn shop', discountValue: 10, minOrderValue: 0, endDate: '2026-08-30', type: 'BANNER' }
+        ];
+        renderPromotions(mock);
+    }
+</script>
+{/body}
+{/include}
