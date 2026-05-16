@@ -21,85 +21,68 @@ public class UserService {
   @Inject
   UserRepository userRepository;
 
-  /**
-   * Register new user
-   */
   @Transactional
   public UserDTO register(RegisterRequest request) {
-    // Check if email already exists
     if (userRepository.existsByEmail(request.getEmail())) {
-      throw new IllegalArgumentException("Email already registered");
+      throw new IllegalArgumentException("Email đã sử dụng");
     }
 
-    // Validate input
     if (request.getEmail() == null || request.getEmail().isEmpty()) {
-      throw new IllegalArgumentException("Email is required");
+      throw new IllegalArgumentException("Không bỏ trống email");
     }
     if (request.getPassword() == null || request.getPassword().length() < 6) {
-      throw new IllegalArgumentException("Password must be at least 6 characters");
+      throw new IllegalArgumentException("Mật khẩu phải ít nhất 6 ký tự");
     }
     if (request.getFullName() == null || request.getFullName().isEmpty()) {
-      throw new IllegalArgumentException("Full name is required");
+      throw new IllegalArgumentException("Họ và tên không bỏ trống");
     }
 
     User user = new User();
-    user.email = request.getEmail();
-    user.password = PasswordUtil.hashPassword(request.getPassword());
-    user.fullName = request.getFullName();
-    user.phone = request.getPhone();
-    user.role = "USER";
-    user.active = true;
+    user.setEmail(request.getEmail());
+    user.setPassword(PasswordUtil.hashPassword(request.getPassword()));
+    user.setFullName(request.getFullName());
+    user.setPhone(request.getPhone());
+    user.setRole("USER");
+    user.setActive(true);
 
     userRepository.persist(user);
     return toDTO(user);
   }
 
-  /**
-   * Login user
-   */
   @Transactional
   public LoginResponse login(LoginRequest request) {
     User user = userRepository.findByEmail(request.getEmail());
 
-    if (user == null || !PasswordUtil.verifyPassword(request.getPassword(), user.password)) {
-      throw new IllegalArgumentException("Invalid email or password");
+    if (user == null || !PasswordUtil.verifyPassword(request.getPassword(), user.getPassword())) {
+      throw new IllegalArgumentException("Email hoặc mật khẩu không hợp lệ");
     }
 
-    if (!user.active) {
-      throw new IllegalArgumentException("User account is inactive");
+    if (!user.getActive()) {
+      throw new IllegalArgumentException("Tài khoản đã bị tắt");
     }
 
-    String token = JwtUtil.generateToken(user.id, user.email, user.role);
+    String token = JwtUtil.generateToken(user.id, user.getEmail(), user.getRole());
 
     return new LoginResponse(
         user.id,
-        user.email,
-        user.fullName,
+        user.getEmail(),
+        user.getFullName(),
         token,
-        user.role);
+        user.getRole());
   }
 
-  /**
-   * Get user by ID
-   */
   @Transactional
   public UserDTO getUserById(Long id) {
     User user = userRepository.findById(id);
     return user != null ? toDTO(user) : null;
   }
 
-  /**
-   * Get user by email
-   */
   @Transactional
   public UserDTO getUserByEmail(String email) {
     User user = userRepository.findByEmail(email);
     return user != null ? toDTO(user) : null;
   }
 
-  /**
-   * Get all users (admin only)
-   */
   @Transactional
   public List<UserDTO> getAllUsers() {
     return userRepository.listAll().stream()
@@ -107,80 +90,68 @@ public class UserService {
         .collect(Collectors.toList());
   }
 
-  /**
-   * Update user profile
-   */
   @Transactional
   public UserDTO updateProfile(Long id, UserDTO dto) {
     User user = userRepository.findById(id);
     if (user == null) {
-      throw new IllegalArgumentException("User not found");
+      throw new IllegalArgumentException("Không tìm thấy người dùng");
     }
 
-    user.fullName = dto.getFullName();
-    user.phone = dto.getPhone();
-    user.avatar = dto.getAvatar();
+    user.setFullName(dto.getFullName());
+    user.setPhone(dto.getPhone());
+    user.setAvatar(dto.getAvatar());
 
     userRepository.persist(user);
     return toDTO(user);
   }
 
-  /**
-   * Change password
-   */
   @Transactional
   public void changePassword(Long id, String oldPassword, String newPassword) {
     User user = userRepository.findById(id);
     if (user == null) {
-      throw new IllegalArgumentException("User not found");
+      throw new IllegalArgumentException("Không tìm thấy người dùng");
     }
 
-    if (!PasswordUtil.verifyPassword(oldPassword, user.password)) {
-      throw new IllegalArgumentException("Old password is incorrect");
+    if (!PasswordUtil.verifyPassword(oldPassword, user.getPassword())) {
+      throw new IllegalArgumentException("Mật khẩu cũ không đúng");
     }
 
     if (newPassword == null || newPassword.length() < 6) {
-      throw new IllegalArgumentException("New password must be at least 6 characters");
+      throw new IllegalArgumentException("Mật khẩu mới phải dài hơn 6 ký tự");
     }
 
-    user.password = PasswordUtil.hashPassword(newPassword);
+    user.setPassword(PasswordUtil.hashPassword(newPassword));
     userRepository.persist(user);
   }
 
-  /**
-   * Deactivate user account
-   */
   @Transactional
   public void deactivateUser(Long id) {
     User user = userRepository.findById(id);
     if (user == null) {
-      throw new IllegalArgumentException("User not found");
+      throw new IllegalArgumentException("Không tìm thấy người dùng");
     }
-    user.active = false;
+    user.setActive(false);
     userRepository.persist(user);
   }
 
-  /**
-   * Activate user account (admin only)
-   */
   @Transactional
   public void activateUser(Long id) {
     User user = userRepository.findById(id);
     if (user == null) {
-      throw new IllegalArgumentException("User not found");
+      throw new IllegalArgumentException("Không tìm thấy người dùng");
     }
-    user.active = true;
+    user.setActive(true);
     userRepository.persist(user);
   }
 
   private UserDTO toDTO(User user) {
     return new UserDTO(
         user.id,
-        user.email,
-        user.fullName,
-        user.phone,
-        user.avatar,
-        user.role,
-        user.active);
+        user.getEmail(),
+        user.getFullName(),
+        user.getPhone(),
+        user.getAvatar(),
+        user.getRole(),
+        user.getActive());
   }
 }

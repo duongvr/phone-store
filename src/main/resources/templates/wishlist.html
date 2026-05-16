@@ -1,0 +1,225 @@
+{#include layout}
+{#title}Sản phẩm yêu thích - Phone Store{/title}
+
+{#head}
+<style>
+  .wishlist-container {
+    margin-bottom: 60px;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+  }
+
+  .product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-remove-wishlist {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: none;
+    cursor: pointer;
+    z-index: 5;
+    color: #e74c3c;
+    transition: all 0.2s;
+  }
+
+  .btn-remove-wishlist:hover {
+    transform: scale(1.1);
+    background: #fff5f5;
+  }
+
+  .product-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    background: #f5f5f5;
+  }
+
+  .product-info {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .product-name {
+    font-weight: 600;
+    margin-bottom: 10px;
+    min-height: 40px;
+  }
+
+  .product-price {
+    font-size: 20px;
+    color: #667eea;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+
+  .btn-action {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .btn-action:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .empty-wishlist {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  @media (max-width: 768px) {
+    .products-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .product-image {
+      height: 160px;
+    }
+  }
+</style>
+{/head}
+
+{#body}
+<div class="page-title">
+  <h2>❤️ Sản phẩm yêu thích</h2>
+  <p>Danh sách các sản phẩm bạn đã lưu để xem lại sau</p>
+</div>
+
+<div class="container wishlist-container">
+  <div id="wishlistContent">
+    <div style="text-align:center;padding:40px;color:#999;">Đang tải danh sách yêu thích...</div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    loadWishlist();
+  });
+
+  async function loadWishlist() {
+    const wishlistIds = JSON.parse(localStorage.getItem('wishlist') || "[]");
+    const container = document.getElementById('wishlistContent');
+
+    if (wishlistIds.length === 0) {
+      container.innerHTML = `
+        <div class="empty-wishlist">
+          <div style="font-size: 64px; margin-bottom: 20px;">💔</div>
+          <h3 style="margin-bottom: 10px;">Danh sách yêu thích trống</h3>
+          <p style="color: #999; margin-bottom: 25px;">Hãy dạo quanh cửa hàng và chọn những sản phẩm bạn ưng ý nhé!</p>
+          <a href="/products" class="btn-register" style="display:inline-block; padding: 12px 30px;">Khám phá ngay</a>
+        </div>
+      `;
+      return;
+    }
+
+    try {
+      // Lấy thông tin chi tiết từng sản phẩm
+      // Trong thực tế nên có 1 API endpoint nhận list IDs, ở đây mình loop fetch tạm
+      const products = [];
+      for (const id of wishlistIds) {
+        try {
+          const res = await fetch('/api/products/' + id);
+          if (res.ok) {
+            products.push(await res.json());
+          }
+        } catch (e) {
+          console.error("Error fetching product " + id, e);
+        }
+      }
+
+      renderWishlist(products);
+    } catch (error) {
+      console.error('Error loading wishlist products:', error);
+      container.innerHTML = '<p style="text-align:center; color:#e74c3c;">Lỗi tải dữ liệu. Vui lòng thử lại.</p>';
+    }
+  }
+
+  function renderWishlist(products) {
+    const container = document.getElementById('wishlistContent');
+    
+    if (products.length === 0) {
+      localStorage.setItem('wishlist', '[]');
+      updateWishlistBadge();
+      loadWishlist();
+      return;
+    }
+
+    let html = '<div class="products-grid">';
+    products.forEach(product => {
+      html += `
+        <div class="product-card" id="wishlist-item-$\{product.id}">
+          <button class="btn-remove-wishlist" onclick="removeFromWishlist($\{product.id})" title="Xóa khỏi yêu thích">
+            <i class="bi bi-trash-fill"></i>
+          </button>
+          <img src="$\{product.imageUrl || '/images/placeholder.png'}" alt="$\{product.name}" class="product-image">
+          <div class="product-info">
+            <div class="product-name">$\{product.name}</div>
+            <div class="product-price">$\{formatPrice(product.price)}</div>
+            <div style="display:flex; gap:10px; flex-direction:column;">
+                <button class="btn-action" onclick="addToCart($\{product.id}, '$\{product.name}', $\{product.price}, '$\{product.imageUrl}')">
+                  🛒 Thêm vào giỏ
+                </button>
+                <a href="/products/$\{product.id}" style="text-align:center; color:#667eea; text-decoration:none; font-weight:600; font-size:14px;">Xem chi tiết</a>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function removeFromWishlist(productId) {
+    toggleWishlist(productId);
+    const item = document.getElementById('wishlist-item-' + productId);
+    if (item) {
+      item.style.opacity = '0';
+      item.style.transform = 'scale(0.8)';
+      setTimeout(() => {
+        loadWishlist(); // Reload to handle empty state
+      }, 300);
+    }
+  }
+</script>
+{/body}
+{/include}

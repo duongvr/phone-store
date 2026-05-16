@@ -15,30 +15,96 @@
 
   <table>
     <thead>
-    <tr>
-      <th>Mã ĐH</th>
-      <th>Khách hàng</th>
-      <th>Ngày đặt</th>
-      <th>Tổng tiền</th>
-      <th>Trạng thái</th>
-      <th>Hành động</th>
-    </tr>
+      <tr>
+        <th>Mã ĐH</th>
+        <th>Khách hàng</th>
+        <th>Ngày đặt</th>
+        <th>Tổng tiền</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+      </tr>
     </thead>
-    <tbody>
-    <tr>
-      <td style="font-weight: bold;">#ORD-9981</td>
-      <td>Nguyễn Văn A<br><span style="font-size: 12px; color: #666;">0987654321</span></td>
-      <td>11/05/2026 08:30</td>
-      <td style="color: #e74c3c; font-weight: bold;">62.490.000 ₫</td>
-      <td>
-        <span style="background: #fff3cd; color: #d35400; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">Chờ xác nhận</span>
-      </td>
-      <td>
-        <a href="/admin/orders/9981" class="btn btn-success">Duyệt đơn</a>
-      </td>
-    </tr>
+    <tbody id="ordersBody">
+      <tr>
+        <td colspan="6" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td>
+      </tr>
     </tbody>
   </table>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    loadAdminOrders();
+  });
+
+  async function loadAdminOrders() {
+    try {
+      const res = await fetch(API + "/orders", { headers: getAuthHeader() });
+      if (res.ok) {
+        const orders = await res.json();
+        renderOrders(orders);
+      } else {
+        document.getElementById("ordersBody").innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Lỗi tải dữ liệu</td></tr>';
+      }
+    } catch (e) {
+      console.error("Error:", e);
+    }
+  }
+
+  function renderOrders(orders) {
+    const body = document.getElementById("ordersBody");
+    if (!orders || orders.length === 0) {
+      body.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không có đơn hàng nào</td></tr>';
+      return;
+    }
+
+    let html = '';
+    orders.forEach(o => {
+      const date = new Date(o.createdAt).toLocaleString('vi-VN');
+      const statusStyle = getStatusStyle(o.status);
+
+      let actionsHtml = `<a href="/admin/orders/$\{o.id}" class="btn btn-primary">Chi tiết</a>`;
+      if (o.status === 'PENDING') {
+        actionsHtml += ` <button class="btn btn-success" onclick="updateStatus($\{o.id}, 'CONFIRMED')">Duyệt</button>`;
+      }
+
+      html += `
+        <tr>
+          <td style="font-weight: bold;">#$\{o.id}</td>
+          <td>$\{o.customerName || 'N/A'}<br><span style="font-size: 12px; color: #666;">$\{o.customerPhone || ''}</span></td>
+          <td>$\{date}</td>
+          <td style="color: #e74c3c; font-weight: bold;">$\{formatPrice(o.totalPrice)}</td>
+          <td>
+            <span style="background: $\{statusStyle.bg}; color: $\{statusStyle.color}; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">
+              $\{statusStyle.label}
+            </span>
+          </td>
+          <td>
+            $\{actionsHtml}
+          </td>
+        </tr>
+      `;
+    });
+    body.innerHTML = html;
+  }
+
+  async function updateStatus(id, status) {
+    try {
+      const res = await fetch(API + "/orders/" + id + "/status?status=" + status, {
+        method: "PATCH",
+        headers: getAuthHeader()
+      });
+      if (res.ok) {
+        showToast("Đã cập nhật trạng thái", "success");
+        loadAdminOrders();
+      } else {
+        showToast("Cập nhật thất bại", "error");
+      }
+    } catch (e) {
+      showToast("Lỗi kết nối", "error");
+    }
+  }
+</script>
 </div>
 {/body}
 {/include}

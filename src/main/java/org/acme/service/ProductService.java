@@ -21,98 +21,77 @@ public class ProductService {
   @Inject
   CategoryRepository categoryRepository;
 
-  /**
-   * Get all products with pagination
-   */
   @Transactional
   public List<ProductDTO> getAllProducts(int page, int pageSize) {
     return productRepository.findAll()
-        .page(page, pageSize)
-        .list()
-        .stream()
-        .map(this::toDTO)
-        .collect(Collectors.toList());
+            .page(page, pageSize)
+            .list()
+            .stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
   }
 
-  /**
-   * Get products by category
-   */
   @Transactional
   public List<ProductDTO> getProductsByCategory(Long categoryId, int page, int pageSize) {
     return productRepository.find("category.id", categoryId)
-        .page(page, pageSize)
-        .list()
-        .stream()
-        .map(this::toDTO)
-        .collect(Collectors.toList());
+            .page(page, pageSize)
+            .list()
+            .stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
   }
 
-  /**
-   * Search products by name
-   */
   @Transactional
   public List<ProductDTO> searchProducts(String keyword, int page, int pageSize) {
     return productRepository.find("name like ?1", "%" + keyword + "%")
-        .page(page, pageSize)
-        .list()
-        .stream()
-        .map(this::toDTO)
-        .collect(Collectors.toList());
+            .page(page, pageSize)
+            .list()
+            .stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
   }
 
-  /**
-   * Get featured products
-   */
   @Transactional
   public List<ProductDTO> getFeaturedProducts(int limit) {
     return productRepository.find("featured", true)
-        .page(0, limit)
-        .list()
-        .stream()
-        .map(this::toDTO)
-        .collect(Collectors.toList());
+            .page(0, limit)
+            .list()
+            .stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
   }
 
-  /**
-   * Get product by ID
-   */
   @Transactional
   public ProductDTO getProductById(Long id) {
     Product product = productRepository.findById(id);
     return product != null ? toDTO(product) : null;
   }
 
-  /**
-   * Create new product
-   */
   @Transactional
   public ProductDTO createProduct(ProductDTO dto) {
     Category category = categoryRepository.findById(dto.getCategoryId());
     if (category == null) {
-      throw new IllegalArgumentException("Category not found");
+      throw new IllegalArgumentException("Không tìm thấy danh mục");
     }
 
     Product product = new Product();
-    product.name = dto.getName();
-    product.description = dto.getDescription();
-    product.price = dto.getPrice();
-    product.originalPrice = dto.getOriginalPrice();
-    product.discount = dto.getDiscount();
-    product.imageUrl = dto.getImageUrl();
-    product.stock = dto.getStock();
-    product.brand = dto.getBrand();
-    product.category = category;
-    product.specifications = dto.getSpecifications();
-    product.warranty = dto.getWarranty();
-    product.featured = dto.getFeatured();
+    product.setName(dto.getName());
+    product.setDescription(dto.getDescription());
+    product.setPrice(dto.getPrice());
+    product.setOriginalPrice(dto.getOriginalPrice());
+    product.setDiscount(dto.getDiscount());
+    product.setImageUrl(dto.getImageUrl());
+    product.setStock(dto.getStock());
+    product.setBrand(dto.getBrand());
+    product.setCategory(category);
+    product.setSpecifications(dto.getSpecifications());
+    product.setWarranty(dto.getWarranty());
+    product.setFeatured(dto.getFeatured());
 
     productRepository.persist(product);
     return toDTO(product);
   }
 
-  /**
-   * Update product
-   */
   @Transactional
   public ProductDTO updateProduct(Long id, ProductDTO dto) {
     Product product = productRepository.findById(id);
@@ -125,26 +104,23 @@ public class ProductService {
       throw new IllegalArgumentException("Category not found");
     }
 
-    product.name = dto.getName();
-    product.description = dto.getDescription();
-    product.price = dto.getPrice();
-    product.originalPrice = dto.getOriginalPrice();
-    product.discount = dto.getDiscount();
-    product.imageUrl = dto.getImageUrl();
-    product.stock = dto.getStock();
-    product.brand = dto.getBrand();
-    product.category = category;
-    product.specifications = dto.getSpecifications();
-    product.warranty = dto.getWarranty();
-    product.featured = dto.getFeatured();
+    product.setName(dto.getName());
+    product.setDescription(dto.getDescription());
+    product.setPrice(dto.getPrice());
+    product.setOriginalPrice(dto.getOriginalPrice());
+    product.setDiscount(dto.getDiscount());
+    product.setImageUrl(dto.getImageUrl());
+    product.setStock(dto.getStock());
+    product.setBrand(dto.getBrand());
+    product.setCategory(category);
+    product.setSpecifications(dto.getSpecifications());
+    product.setWarranty(dto.getWarranty());
+    product.setFeatured(dto.getFeatured());
 
     productRepository.persist(product);
     return toDTO(product);
   }
 
-  /**
-   * Delete product
-   */
   @Transactional
   public void deleteProduct(Long id) {
     Product product = productRepository.findById(id);
@@ -154,35 +130,24 @@ public class ProductService {
     productRepository.delete(product);
   }
 
-  /**
-   * Update product stock
-   */
-  @Transactional
-  public void updateStock(Long id, Integer quantity) {
-    Product product = productRepository.findById(id);
-    if (product == null) {
-      throw new IllegalArgumentException("Product not found");
-    }
-    product.stock = quantity;
-    productRepository.persist(product);
+  private ProductDTO toDTO(Product product) {
+    ProductDTO dto = new ProductDTO();
+    dto.setId(product.id);
+    dto.setName(product.getName());
+    dto.setDescription(product.getDescription());
+    dto.setPrice(product.getPrice());
+    dto.setOriginalPrice(product.getOriginalPrice());
+    dto.setDiscount(product.getDiscount());
+    dto.setImageUrl(product.getImageUrl());
+    dto.setStock(product.getStock());
+    dto.setBrand(product.getBrand());
+    dto.setCategoryId(product.getCategory().id);
+    dto.setSpecifications(product.getSpecifications());
+    dto.setWarranty(product.getWarranty());
+    dto.setFeatured(product.getFeatured());
+    return dto;
   }
 
-  private ProductDTO toDTO(Product product) {
-    return new ProductDTO(
-        product.id,
-        product.name,
-        product.description,
-        product.price,
-        product.originalPrice,
-        product.discount,
-        product.imageUrl,
-        product.stock,
-        product.brand,
-        product.rating,
-        product.reviewCount,
-        product.category != null ? product.category.id : null,
-        product.specifications,
-        product.warranty,
-        product.featured);
-  }
+    public void updateStock(Long id, Integer quantity) {
+    }
 }

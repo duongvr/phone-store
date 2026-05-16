@@ -17,14 +17,15 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order_item extends PanacheEntity {
+public class OrderItem extends PanacheEntity {
 
     @Column(name = "order_id", nullable = false)
-    public Long orderId;
+    private Long orderId;
 
     @Column(name = "product_id", nullable = false)
-    private Long product_id;
+    private Long productId;
 
     @Column(nullable = false)
     private int quantity;
 }
+

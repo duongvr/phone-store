@@ -16,19 +16,19 @@ import lombok.NoArgsConstructor;
 public class Category extends PanacheEntity {
 
   @Column(unique = true, nullable = false, length = 100)
-  public String name;
+  private String name;
 
   @Column(columnDefinition = "TEXT")
-  public String description;
+  private String description;
 
   @Column(length = 50)
-  public String icon;
+  private String icon;
 
   @Column(name = "created_at")
-  public Long createdAt;
+  private Long createdAt;
 
   @Column(name = "updated_at")
-  public Long updatedAt;
+  private Long updatedAt;
 
   @PrePersist
   protected void onCreate() {

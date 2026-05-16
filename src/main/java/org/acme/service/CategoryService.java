@@ -16,86 +16,71 @@ public class CategoryService {
   @Inject
   CategoryRepository categoryRepository;
 
-  /**
-   * Get all categories
-   */
   @Transactional
   public List<CategoryDTO> getAllCategories() {
     return categoryRepository.listAll().stream()
-        .map(this::toDTO)
-        .collect(Collectors.toList());
+            .map(this::toDTO)
+            .collect(Collectors.toList());
   }
 
-  /**
-   * Get category by ID
-   */
   @Transactional
   public CategoryDTO getCategoryById(Long id) {
     Category category = categoryRepository.findById(id);
     return category != null ? toDTO(category) : null;
   }
 
-  /**
-   * Create new category
-   */
   @Transactional
   public CategoryDTO createCategory(CategoryDTO dto) {
     // Check if category name already exists
     if (categoryRepository.findByName(dto.getName()) != null) {
-      throw new IllegalArgumentException("Category name already exists");
+      throw new IllegalArgumentException("Tên danh mục đã tồn tại");
     }
 
     Category category = new Category();
-    category.name = dto.getName();
-    category.description = dto.getDescription();
-    category.icon = dto.getIcon();
+    category.setName(dto.getName());
+    category.setDescription(dto.getDescription());
+    category.setIcon(dto.getIcon());
 
     categoryRepository.persist(category);
     return toDTO(category);
   }
 
-  /**
-   * Update category
-   */
   @Transactional
   public CategoryDTO updateCategory(Long id, CategoryDTO dto) {
     Category category = categoryRepository.findById(id);
     if (category == null) {
-      throw new IllegalArgumentException("Category not found");
+      throw new IllegalArgumentException("Không tìm thấy danh mục");
     }
 
-    // Check if new name already exists (and it's not the same category)
-    if (!category.name.equals(dto.getName())) {
+    if (!category.getName().equals(dto.getName())) {
       if (categoryRepository.findByName(dto.getName()) != null) {
-        throw new IllegalArgumentException("Category name already exists");
+        throw new IllegalArgumentException("Tên danh mục đã tồn tại");
       }
     }
 
-    category.name = dto.getName();
-    category.description = dto.getDescription();
-    category.icon = dto.getIcon();
+    category.setName(dto.getName());
+    category.setDescription(dto.getDescription());
+    category.setIcon(dto.getIcon());
 
     categoryRepository.persist(category);
     return toDTO(category);
   }
 
-  /**
-   * Delete category
-   */
   @Transactional
   public void deleteCategory(Long id) {
     Category category = categoryRepository.findById(id);
     if (category == null) {
-      throw new IllegalArgumentException("Category not found");
+      throw new IllegalArgumentException("Không tìm thấy danh mục");
     }
     categoryRepository.delete(category);
   }
 
   private CategoryDTO toDTO(Category category) {
-    return new CategoryDTO(
-        category.id,
-        category.name,
-        category.description,
-        category.icon);
+    CategoryDTO dto = new CategoryDTO();
+    dto.setId(category.id);
+    dto.setName(category.getName());
+    dto.setDescription(category.getDescription());
+    dto.setIcon(category.getIcon());
+    return dto;
   }
 }

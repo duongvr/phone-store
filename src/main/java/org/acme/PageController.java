@@ -9,10 +9,11 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
 import org.acme.service.ProductService;
-// Giả định bạn có các service sau, hãy đổi tên package cho đúng với dự án của bạn
 import org.acme.service.CategoryService;
-//import org.acme.service.OrderService;
-//import org.acme.service.PromotionService;
+import org.acme.service.OrderService;
+import org.acme.service.PromotionService;
+import org.acme.service.UserService;
+import org.acme.service.AddressService;
 
 import java.util.List;
 
@@ -31,16 +32,25 @@ public class PageController {
     @Inject Template profile;
     @Inject Template addresses;
     @Inject Template orders;
+    @Inject @Location("order-detail") Template orderDetail;
     @Inject Template promotions;
+    @Inject Template wishlist;
 
+    @Inject @Location("admin/admin-dashboard") Template adminDashboard;
     @Inject @Location("admin/products") Template adminProducts;
+    @Inject @Location("admin/admin-product-form") Template adminProductForm;
     @Inject @Location("admin/orders") Template adminOrders;
+    @Inject @Location("admin/admin-order-detail") Template adminOrderDetail;
+    @Inject @Location("admin/admin-users") Template adminUsers;
+    @Inject @Location("admin/admin-promotions") Template adminPromotions;
 
     // 2. INJECT CÁC SERVICE ĐỂ LẤY DỮ LIỆU
     @Inject ProductService productService;
-    @Inject CategoryService categoryService; // Cần thiết cho menu và sidebar
-//    @Inject OrderService orderService;       // Cần thiết cho lịch sử đơn hàng
-//    @Inject PromotionService promotionService;
+    @Inject CategoryService categoryService;
+    @Inject OrderService orderService;
+    @Inject PromotionService promotionService;
+    @Inject UserService userService;
+    @Inject AddressService addressService;
 
     // --- USER ROUTES ---
 
@@ -74,27 +84,46 @@ public class PageController {
                 .data("relatedProducts", productService.getFeaturedProducts(4));
     }
 
-//    @GET
-//    @Path("promotions")
-//    @Produces(MediaType.TEXT_HTML)
-//    public TemplateInstance promotionsPage() {
-//        return promotions.data("promotions", promotionService.getAllActivePromotions());
-//    }
+    @GET
+    @Path("promotions")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance promotionsPage() {
+        return promotions.data("promotions", promotionService.getPromotions());
+    }
 
-//    @GET
-//    @Path("orders")
-//    @Produces(MediaType.TEXT_HTML)
-//    public TemplateInstance ordersPage() {
-//        // Giả sử lấy đơn hàng của user đang login (cần Security Context nếu có)
-//        return orders.data("orders", orderService.getAllOrders());
-//    }
+    @GET
+    @Path("orders")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance ordersPage() {
+        return orders.data("orders", orderService.getAllOrders());
+    }
+
+    @GET
+    @Path("orders/{id}")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance orderDetailPage(@PathParam("id") Long id) {
+        return orderDetail.data("order", "Chi tiết đơn hàng " + id);
+    }
 
     @GET
     @Path("profile")
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance profilePage() {
-        // Truyền thông tin user hiện tại vào đây
         return profile.data("user", "Thông tin user");
+    }
+
+    @GET
+    @Path("addresses")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance addressesPage() {
+        return addresses.instance();
+    }
+
+    @GET
+    @Path("wishlist")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance wishlistPage() {
+        return wishlist.instance();
     }
 
     // --- CÁC TRANG TĨNH HOẶC CHƯA CÓ SERVICE ---
@@ -103,7 +132,7 @@ public class PageController {
     @Path("cart")
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance cartPage() {
-        return cart.instance(); // Thường xử lý bằng Javascript/LocalStorage ở Frontend
+        return cart.instance();
     }
 
     @GET
@@ -130,17 +159,58 @@ public class PageController {
     // --- ADMIN MAPPING ---
 
     @GET
+    @Path("admin/dashboard")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance adminDashboardPage() {
+        return adminDashboard.instance();
+    }
+
+    @GET
     @Path("admin/products")
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance adminProductsPage() {
-        // Admin lấy toàn bộ để quản lý
         return adminProducts.data("products", productService.getAllProducts(0, 100));
     }
 
-//    @GET
-//    @Path("admin/orders")
-//    @Produces(MediaType.TEXT_HTML)
-//    public TemplateInstance adminOrdersPage() {
-//        return adminOrders.data("orders", orderService.getAllOrders());
-//    }
-}
+    @GET
+    @Path("admin/products/add")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance addProductPage() {
+        return adminProductForm.data("mode", "add");
+    }
+
+    @GET
+    @Path("admin/products/edit/{id}")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance editProductPage(@PathParam("id") Long id) {
+        return adminProductForm.data("mode", "edit").data("product", productService.getProductById(id));
+    }
+
+    @GET
+    @Path("admin/orders")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance adminOrdersPage() {
+        return adminOrders.data("orders", orderService.getAllOrders());
+    }
+
+    @GET
+    @Path("admin/orders/{id}")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance adminOrderDetailPage(@PathParam("id") Long id) {
+        return adminOrderDetail.instance();
+    }
+
+    @GET
+    @Path("admin/users")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance adminUsersPage() {
+        return adminUsers.data("users", userService.getAllUsers());
+    }
+
+    @GET
+    @Path("admin/promotions")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance adminPromotionsPage() {
+        return adminPromotions.data("promotions", promotionService.getPromotions());
+    }
+}

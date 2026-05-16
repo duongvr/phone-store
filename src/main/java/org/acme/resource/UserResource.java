@@ -30,17 +30,17 @@ public class UserResource {
     try {
       if (request.getEmail() == null || request.getEmail().isEmpty()) {
         return Response.status(Response.Status.BAD_REQUEST)
-            .entity(new ErrorResponse("Email is required"))
+            .entity(new ErrorResponse("Không bỏ trống email"))
             .build();
       }
       if (request.getPassword() == null || request.getPassword().isEmpty()) {
         return Response.status(Response.Status.BAD_REQUEST)
-            .entity(new ErrorResponse("Password is required"))
+            .entity(new ErrorResponse("Không bỏ trống mật khẩu"))
             .build();
       }
       if (request.getFullName() == null || request.getFullName().isEmpty()) {
         return Response.status(Response.Status.BAD_REQUEST)
-            .entity(new ErrorResponse("Full name is required"))
+            .entity(new ErrorResponse("Không bỏ trống họ và tên"))
             .build();
       }
 
@@ -52,7 +52,7 @@ public class UserResource {
           .build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(new ErrorResponse("Error registering user: " + e.getMessage()))
+          .entity(new ErrorResponse("Lỗi khi đăng ký người dùng mới: " + e.getMessage()))
           .build();
     }
   }
@@ -66,12 +66,12 @@ public class UserResource {
     try {
       if (request.getEmail() == null || request.getEmail().isEmpty()) {
         return Response.status(Response.Status.BAD_REQUEST)
-            .entity(new ErrorResponse("Email is required"))
+            .entity(new ErrorResponse("Không bỏ trống email"))
             .build();
       }
       if (request.getPassword() == null || request.getPassword().isEmpty()) {
         return Response.status(Response.Status.BAD_REQUEST)
-            .entity(new ErrorResponse("Password is required"))
+            .entity(new ErrorResponse("Không bỏ trống mật khẩu"))
             .build();
       }
 
@@ -83,7 +83,7 @@ public class UserResource {
           .build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(new ErrorResponse("Error logging in: " + e.getMessage()))
+          .entity(new ErrorResponse("Lỗi khi đăng nhập: " + e.getMessage()))
           .build();
     }
   }
@@ -98,13 +98,13 @@ public class UserResource {
       UserDTO user = userService.getUserById(id);
       if (user == null) {
         return Response.status(Response.Status.NOT_FOUND)
-            .entity(new ErrorResponse("User not found"))
+            .entity(new ErrorResponse("Không tìm thấy người dùng"))
             .build();
       }
       return Response.ok(user).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(new ErrorResponse("Error fetching user: " + e.getMessage()))
+          .entity(new ErrorResponse("Lỗi khi lấy dữ liệu người dùng: " + e.getMessage()))
           .build();
     }
   }
@@ -119,13 +119,13 @@ public class UserResource {
       UserDTO user = userService.getUserByEmail(email);
       if (user == null) {
         return Response.status(Response.Status.NOT_FOUND)
-            .entity(new ErrorResponse("User not found"))
+            .entity(new ErrorResponse("Không tìm thấy người dùng"))
             .build();
       }
       return Response.ok(user).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(new ErrorResponse("Error fetching user: " + e.getMessage()))
+          .entity(new ErrorResponse("Lỗi khi lấy thông tin người dùng: " + e.getMessage()))
           .build();
     }
   }
@@ -140,7 +140,7 @@ public class UserResource {
       return Response.ok(users).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(new ErrorResponse("Error fetching users: " + e.getMessage()))
+          .entity(new ErrorResponse("Lỗi khi lấy thông tin người dùng: " + e.getMessage()))
           .build();
     }
   }
@@ -160,7 +160,7 @@ public class UserResource {
           .build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(new ErrorResponse("Error updating profile: " + e.getMessage()))
+          .entity(new ErrorResponse("Lỗi khi cập nhật thông tin người dùng: " + e.getMessage()))
           .build();
     }
   }
@@ -174,12 +174,12 @@ public class UserResource {
     try {
       if (request.getOldPassword() == null || request.getOldPassword().isEmpty()) {
         return Response.status(Response.Status.BAD_REQUEST)
-            .entity(new ErrorResponse("Old password is required"))
+            .entity(new ErrorResponse("Không bỏ trống mật khẩu cũ"))
             .build();
       }
       if (request.getNewPassword() == null || request.getNewPassword().isEmpty()) {
         return Response.status(Response.Status.BAD_REQUEST)
-            .entity(new ErrorResponse("New password is required"))
+            .entity(new ErrorResponse("Không bỏ trống mật khẩu mới"))
             .build();
       }
 
@@ -191,7 +191,7 @@ public class UserResource {
           .build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(new ErrorResponse("Error changing password: " + e.getMessage()))
+          .entity(new ErrorResponse("Lỗi khi đổi mật khẩu: " + e.getMessage()))
           .build();
     }
   }
@@ -211,7 +211,7 @@ public class UserResource {
           .build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(new ErrorResponse("Error deactivating user: " + e.getMessage()))
+          .entity(new ErrorResponse("Lỗi khi tắt: " + e.getMessage()))
           .build();
     }
   }
@@ -231,7 +231,7 @@ public class UserResource {
           .build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(new ErrorResponse("Error activating user: " + e.getMessage()))
+          .entity(new ErrorResponse("Lỗi khi kích hoạt: " + e.getMessage()))
           .build();
     }
   }
@@ -245,21 +245,21 @@ public class UserResource {
     try {
       if (request.getToken() == null || request.getToken().isEmpty()) {
         return Response.status(Response.Status.BAD_REQUEST)
-            .entity(new ErrorResponse("Token is required"))
+            .entity(new ErrorResponse("Yêu cầu token"))
             .build();
       }
 
       Long userId = JwtUtil.validateToken(request.getToken());
       if (userId == null) {
         return Response.status(Response.Status.UNAUTHORIZED)
-            .entity(new ErrorResponse("Invalid or expired token"))
+            .entity(new ErrorResponse("Token hết hạn hoặc không đúng "))
             .build();
       }
 
       return Response.ok(new TokenVerificationResponse(userId, true)).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(new ErrorResponse("Error verifying token: " + e.getMessage()))
+          .entity(new ErrorResponse("Lỗi xác thực token: " + e.getMessage()))
           .build();
     }
   }

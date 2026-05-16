@@ -1,0 +1,93 @@
+{#include admin/admin-layout pageTitle="Quản lý Người dùng" activeMenu="users"}
+{#title}Quản lý Người dùng - Admin{/title}
+
+{#body}
+<div class="admin-card">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <input type="text" id="userSearch" placeholder="Tìm kiếm user (email, sđt)..." style="padding: 10px; width: 300px; border: 1px solid #ddd; border-radius: 4px;" oninput="filterUsers()">
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Họ tên</th>
+            <th>Email / SĐT</th>
+            <th>Phân quyền</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody id="usersBody">
+        <tr>
+            <td colspan="6" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    let allUsers = [];
+
+    document.addEventListener("DOMContentLoaded", function() {
+        loadUsers();
+    });
+
+    async function loadUsers() {
+        try {
+            const res = await fetch(API + "/users", { headers: getAuthHeader() });
+            if (res.ok) {
+                allUsers = await res.json();
+                renderUsers(allUsers);
+            } else {
+                document.getElementById("usersBody").innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Lỗi tải dữ liệu</td></tr>';
+            }
+        } catch (e) {
+            console.error("Error:", e);
+        }
+    }
+
+    function renderUsers(users) {
+        const body = document.getElementById("usersBody");
+        if (!users || users.length === 0) {
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không tìm thấy người dùng nào</td></tr>';
+            return;
+        }
+
+        let html = '';
+        users.forEach(u => {
+            const roleStyle = u.role === 'ADMIN' ? 'background: #fce4ec; color: #c2185b;' : 'background: #e1f5fe; color: #0288d1;';
+            const roleLabel = u.role === 'ADMIN' ? 'Quản trị viên' : 'Khách hàng';
+            
+            html += `
+                <tr>
+                    <td>#$\{u.id}</td>
+                    <td style="font-weight: 600;">$\{u.fullName || 'N/A'}</td>
+                    <td>$\{u.email}<br><span style="font-size:12px; color:#666;">$\{u.phone || ''}</span></td>
+                    <td><span style="$\{roleStyle} padding: 4px 8px; border-radius: 4px; font-size: 12px;">$\{roleLabel}</span></td>
+                    <td><span style="color: #27ae60; font-weight: 600;">Hoạt động</span></td>
+                    <td>
+                        <button class="btn btn-danger" style="font-size: 12px;" onclick="toggleLock($\{u.id})">Khóa TK</button>
+                    </td>
+                </tr>
+            `;
+        });
+        body.innerHTML = html;
+    }
+
+    function filterUsers() {
+        const q = document.getElementById("userSearch").value.toLowerCase();
+        const filtered = allUsers.filter(u => 
+            (u.fullName && u.fullName.toLowerCase().includes(q)) || 
+            (u.email && u.email.toLowerCase().includes(q)) || 
+            (u.phone && u.phone.includes(q))
+        );
+        renderUsers(filtered);
+    }
+
+    async function toggleLock(id) {
+        showToast("Tính năng đang được phát triển", "info");
+    }
+</script>
+{/body}
+{/include}

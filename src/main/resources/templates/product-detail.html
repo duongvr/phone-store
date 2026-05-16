@@ -1,5 +1,5 @@
 {#include layout}
-{#title}{#if product}{product.name}{#else}Chi tiết sản phẩm{/if} - Phone Store{/title}
+{#title}Chi tiết sản phẩm - Phone Store{/title}
 
 {#head}
 <style>
@@ -9,70 +9,327 @@
     color: #666;
   }
 
+  .breadcrumb a {
+    color: #667eea;
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
   .product-detail-container {
     background: white;
-    border-radius: 15px;
+    border-radius: 12px;
     padding: 30px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  .product-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
   }
 
   .main-image {
     width: 100%;
     height: 400px;
-    object-fit: contain;
+    object-fit: cover;
     border: 1px solid #eee;
-    border-radius: 10px;
+    border-radius: 8px;
+    background: #f5f5f5;
+  }
+
+  .thumbnail-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+  }
+
+  .thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+  }
+
+  .thumbnail:hover,
+  .thumbnail.active {
+    border-color: #667eea;
+  }
+
+  .product-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  .product-brand {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .rating-stars {
+    color: #f39c12;
+    font-size: 16px;
+  }
+
+  .rating-count {
+    color: #999;
+    font-size: 14px;
+  }
+
+  .price-section {
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .price-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
   }
 
   .current-price {
+    font-size: 32px;
+    font-weight: 700;
     color: #e74c3c;
-    font-size: 34px;
-    font-weight: bold;
+  }
+
+  .original-price {
+    font-size: 18px;
+    color: #999;
+    text-decoration: line-through;
+  }
+
+  .discount-badge {
+    background: #e74c3c;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .stock-status {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+  .stock-available {
+    color: #27ae60;
+  }
+
+  .stock-unavailable {
+    color: #e74c3c;
+  }
+
+  .quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+  }
+
+  .qty-label {
+    font-weight: 600;
+  }
+
+  .qty-input {
+    width: 60px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    text-align: center;
+  }
+
+  .qty-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .qty-btn:hover {
+    background: #f5f5f5;
   }
 
   .action-buttons {
     display: flex;
-    gap: 15px;
-    margin-top: 20px;
+    gap: 12px;
+    margin-bottom: 25px;
   }
 
-  .btn-buy {
+  .btn-add-cart {
     flex: 1;
-    padding: 15px;
+    padding: 14px;
     background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-weight: 700;
     cursor: pointer;
+    transition: all 0.3s;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-add-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-wishlist {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #ddd;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-wishlist:hover {
+    border-color: #e74c3c;
+    color: #e74c3c;
+  }
+
+  .btn-wishlist.active {
+    background: #fff5f5;
+    border-color: #e74c3c;
+    color: #e74c3c;
   }
 
   .product-details-section {
     background: white;
-    border-radius: 15px;
+    border-radius: 12px;
     padding: 30px;
-    margin-top: 40px;
     margin-bottom: 50px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   }
 
-  .tabs {
+  .details-tabs {
     display: flex;
-    border-bottom: 2px solid #eee;
-    margin-bottom: 20px;
+    gap: 20px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #f0f0f0;
   }
 
-  .tab {
-    padding: 12px 20px;
+  .tab-btn {
+    padding: 12px 0;
+    background: none;
+    border: none;
     cursor: pointer;
     font-weight: 600;
+    color: #999;
     border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
-  .tab.active {
+  .tab-btn.active {
     color: #667eea;
-    border-color: #667eea;
+    border-bottom-color: #667eea;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .specs-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .specs-table tr {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .specs-table td {
+    padding: 12px 0;
+  }
+
+  .specs-table td:first-child {
+    font-weight: 600;
+    width: 30%;
+    color: #555;
+  }
+
+  @media (max-width: 768px) {
+    .product-detail-container {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .product-title {
+      font-size: 20px;
+    }
+
+    .current-price {
+      font-size: 24px;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .btn-wishlist {
+      width: 100%;
+    }
+
+    .details-tabs {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .tab-btn {
+      border-bottom: 2px solid #f0f0f0;
+      padding: 12px;
+    }
+
+    .tab-btn.active {
+      border-bottom-color: #667eea;
+    }
   }
 </style>
 {/head}
@@ -80,34 +337,204 @@
 {#body}
 <div class="container">
   <div class="breadcrumb">
-    <a href="/">Trang chủ</a> > <a href="/products">Sản phẩm</a> > {#if product}{product.name}{/if}
+    <a href="/">Trang chủ</a> > <a href="/products">Sản phẩm</a> > <span id="productNameBreadcrumb">Chi tiết sản
+      phẩm</span>
   </div>
 
-  {#if product}
-  <div class="product-detail-container">
-    <div>
-      <img id="mainImage" src="{product.imageUrl}" class="main-image" />
-    </div>
-    <div>
-      <h1 style="font-size: 30px; margin-bottom: 10px;">{product.name}</h1>
-      <div style="background: #fafafa; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
-        <div class="current-price">{product.price.toLocaleString('vi-VN')} ₫</div>
-      </div>
-      <div class="action-buttons">
-        <button class="btn-buy" id="addToCartBtn"
-          style="background: white; color: #667eea; border: 2px solid #667eea;">🛒 Thêm vào giỏ</button>
-        <button class="btn-buy" onclick="window.location.href='/checkout'">Mua ngay</button>
-      </div>
-    </div>
+  <div class="product-detail-container" id="productContainer">
+    <div style="text-align:center;padding:40px;color:#999;grid-column:1/-1;">Đang tải sản phẩm...</div>
   </div>
 
-  <div class="product-details-section">
-    <div class="tabs">
-      <div class="tab active">Mô tả chi tiết</div>
+  <div class="product-details-section" id="detailsSection" style="display:none;">
+    <div class="details-tabs">
+      <button class="tab-btn active" onclick="switchTab('specs')"><i class="bi bi-card-list"></i> Thông số kỹ
+        thuật</button>
+      <button class="tab-btn" onclick="switchTab('description')"><i class="bi bi-card-text"></i> Mô tả</button>
+      <button class="tab-btn" onclick="switchTab('warranty')"><i class="bi bi-shield-check"></i> Bảo hành</button>
     </div>
-    <div>{product.description}</div>
+
+    <div id="specs" class="tab-content active">
+      <table class="specs-table">
+        <tr>
+          <td>Hệ điều hành</td>
+          <td id="spec-os">-</td>
+        </tr>
+        <tr>
+          <td>Chip xử lý</td>
+          <td id="spec-chip">-</td>
+        </tr>
+        <tr>
+          <td>RAM</td>
+          <td id="spec-ram">-</td>
+        </tr>
+        <tr>
+          <td>Bộ nhớ</td>
+          <td id="spec-storage">-</td>
+        </tr>
+        <tr>
+          <td>Màn hình</td>
+          <td id="spec-screen">-</td>
+        </tr>
+        <tr>
+          <td>Camera chính</td>
+          <td id="spec-camera">-</td>
+        </tr>
+        <tr>
+          <td>Camera selfie</td>
+          <td id="spec-selfie">-</td>
+        </tr>
+        <tr>
+          <td>Pin</td>
+          <td id="spec-battery">-</td>
+        </tr>
+      </table>
+    </div>
+
+    <div id="description" class="tab-content">
+      <p id="descriptionText">-</p>
+    </div>
+
+    <div id="warranty" class="tab-content">
+      <p id="warrantyText">-</p>
+    </div>
   </div>
-  {/if}
 </div>
+
+
+<script>
+  const productId = window.location.pathname.split('/').pop();
+
+  document.addEventListener("DOMContentLoaded", function () {
+    loadProductDetail();
+  });
+
+  async function loadProductDetail() {
+    try {
+      const response = await fetch(`/api/products/` + productId);
+      if (!response.ok) throw new Error('Product not found');
+      const product = await response.json();
+
+      document.getElementById('productNameBreadcrumb').textContent = product.name;
+
+      const container = document.getElementById('productContainer');
+
+      const priceHtml = product.originalPrice && product.originalPrice > product.price
+        ? `
+          <span class="original-price">$\{formatPrice(product.originalPrice)}</span>
+          <span class="discount-badge">-$\{product.discount || 0}%</span>
+        `
+        : '';
+
+      const stockHtml = product.stock > 0
+        ? `<span class="stock-available"><i class="bi bi-check-circle-fill"></i> Còn $\{product.stock} sản phẩm</span>`
+        : `<span class="stock-unavailable"><i class="bi bi-x-circle-fill"></i> Hết hàng</span>`;
+
+      const productHtml = `
+        <div class="product-gallery">
+          <img src="$\{product.imageUrl}" alt="$\{product.name}" class="main-image" id="mainImage">
+          <div class="thumbnail-list">
+            <img src="$\{product.imageUrl}" alt="Thumbnail 1" class="thumbnail active" onclick="changeImage(this)">
+          </div>
+        </div>
+
+        <div class="product-info">
+          <div class="product-title">$\{product.name}</div>
+          <div class="product-brand">Thương hiệu: $\{product.brand || 'N/A'}</div>
+
+          <div class="product-rating">
+            <span class="rating-stars"><i class="bi bi-star-fill"></i> $\{product.rating || 0}/5</span>
+            <span class="rating-count">($\{product.reviewCount || 0} đánh giá)</span>
+          </div>
+
+          <div class="price-section">
+            <div class="price-display">
+              <span class="current-price">$\{formatPrice(product.price)}</span>
+              $\{priceHtml}
+            </div>
+            <div class="stock-status">
+              $\{stockHtml}
+            </div>
+          </div>
+
+          <div class="quantity-selector">
+            <span class="qty-label">Số lượng:</span>
+            <button class="qty-btn" onclick="decreaseQty()">−</button>
+            <input type="number" id="quantity" class="qty-input" value="1" min="1" max="$\{product.stock || 1}">
+            <button class="qty-btn" onclick="increaseQty()">+</button>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn-add-cart" onclick="addToCart($\{product.id}, '$\{product.name}', $\{product.price}, '$\{product.imageUrl}')">
+              <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+            </button>
+            <button class="btn-wishlist $\{isFavorite(product.id) ? 'active' : ''}" onclick="toggleWishlist($\{product.id}); this.classList.toggle('active')" title="Thêm vào yêu thích">
+              <i class="bi bi-heart-fill"></i>
+            </button>
+          </div>
+
+          <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; font-size: 14px; color: #555;">
+            <div style="margin-bottom: 10px;"><i class="bi bi-check-circle-fill" style="color: #27ae60;"></i> Hàng chính hãng 100%</div>
+            <div style="margin-bottom: 10px;"><i class="bi bi-check-circle-fill" style="color: #27ae60;"></i> Bảo hành 12 tháng</div>
+            <div><i class="bi bi-check-circle-fill" style="color: #27ae60;"></i> Giao hàng miễn phí (Hà Nội, TP.HCM)</div>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = productHtml;
+
+      document.getElementById('spec-os').textContent = product.os || '-';
+      document.getElementById('spec-chip').textContent = product.chip || '-';
+      document.getElementById('spec-ram').textContent = product.ram || '-';
+      document.getElementById('spec-storage').textContent = product.storage || '-';
+      document.getElementById('spec-screen').textContent = product.screen || '-';
+      document.getElementById('spec-camera').textContent = product.camera || '-';
+      document.getElementById('spec-selfie').textContent = product.selfieCamera || '-';
+      document.getElementById('spec-battery').textContent = product.battery || '-';
+
+      document.getElementById('descriptionText').textContent = product.description || 'Không có mô tả';
+      document.getElementById('warrantyText').textContent = product.warranty || 'Bảo hành 12 tháng từ ngày mua';
+
+      document.getElementById('detailsSection').style.display = 'block';
+    } catch (error) {
+      console.error('Error loading product:', error);
+      document.getElementById('productContainer').innerHTML = `
+        <div style="text-align:center;padding:40px;color:#e74c3c;grid-column:1/-1;">
+          <p>Không tìm thấy sản phẩm. Vui lòng thử lại.</p>
+          <a href="/products" style="color: #667eea; font-weight: 600; text-decoration: none;">← Quay lại danh sách sản phẩm</a>
+        </div>
+      `;
+    }
+  }
+
+  function changeImage(img) {
+    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+    img.classList.add('active');
+    document.getElementById('mainImage').src = img.src;
+  }
+
+  function increaseQty() {
+    const input = document.getElementById('quantity');
+    const max = parseInt(input.max) || 99;
+    if (parseInt(input.value) < max) input.value = parseInt(input.value) + 1;
+  }
+
+  function decreaseQty() {
+    const input = document.getElementById('quantity');
+    if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
+  }
+
+  function addToWishlist(productId) {
+    toggleWishlist(productId);
+  }
+
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+
+
 {/body}
 {/include}

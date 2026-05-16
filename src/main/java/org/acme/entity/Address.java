@@ -17,40 +17,40 @@ public class Address extends PanacheEntity {
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
-  public User user;
+  private User user;
 
   @Column(nullable = false, length = 100)
-  public String name; // Nhà riêng, Công ty, ...
+  private String name; // Nhà riêng, Công ty, ...
 
   @Column(nullable = false, length = 100)
-  public String fullName; // Tên người nhận
+  private String fullName; // Tên người nhận
 
   @Column(nullable = false, length = 20)
-  public String phone;
+  private String phone;
 
   @Column(nullable = false, length = 255)
-  public String address; // Địa chỉ chi tiết
+  private String address; // Địa chỉ chi tiết
 
   @Column(nullable = false, length = 50)
-  public String city; // Tỉnh/Thành phố
+  private String city; // Tỉnh/Thành phố
 
   @Column(nullable = false, length = 50)
-  public String district; // Quận/Huyện
+  private String district; // Quận/Huyện
 
   @Column(nullable = false, length = 50)
-  public String ward; // Phường/Xã
+  private String ward; // Phường/Xã
 
   @Column(length = 20)
-  public String postalCode;
+  private String postalCode;
 
   @Column(name = "is_default", nullable = false)
-  public Boolean isDefault = false;
+  private Boolean isDefault = false;
 
   @Column(name = "created_at")
-  public Long createdAt;
+  private Long createdAt;
 
   @Column(name = "updated_at")
-  public Long updatedAt;
+  private Long updatedAt;
 
   @PrePersist
   protected void onCreate() {
