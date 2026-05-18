@@ -79,14 +79,14 @@ public class ProductService {
     product.setDescription(dto.getDescription());
     product.setPrice(dto.getPrice());
     product.setOriginalPrice(dto.getOriginalPrice());
-    product.setDiscount(dto.getDiscount());
+    product.setDiscount(dto.getDiscount() != null ? dto.getDiscount() : 0);
     product.setImageUrl(dto.getImageUrl());
-    product.setStock(dto.getStock());
+    product.setStock(dto.getStock() != null ? dto.getStock() : 0);
     product.setBrand(dto.getBrand());
     product.setCategory(category);
     product.setSpecifications(dto.getSpecifications());
     product.setWarranty(dto.getWarranty());
-    product.setFeatured(dto.getFeatured());
+    product.setFeatured(dto.getFeatured() != null ? dto.getFeatured() : false);
 
     productRepository.persist(product);
     return toDTO(product);
@@ -108,14 +108,14 @@ public class ProductService {
     product.setDescription(dto.getDescription());
     product.setPrice(dto.getPrice());
     product.setOriginalPrice(dto.getOriginalPrice());
-    product.setDiscount(dto.getDiscount());
+    product.setDiscount(dto.getDiscount() != null ? dto.getDiscount() : 0);
     product.setImageUrl(dto.getImageUrl());
-    product.setStock(dto.getStock());
+    product.setStock(dto.getStock() != null ? dto.getStock() : 0);
     product.setBrand(dto.getBrand());
     product.setCategory(category);
     product.setSpecifications(dto.getSpecifications());
     product.setWarranty(dto.getWarranty());
-    product.setFeatured(dto.getFeatured());
+    product.setFeatured(dto.getFeatured() != null ? dto.getFeatured() : false);
 
     productRepository.persist(product);
     return toDTO(product);

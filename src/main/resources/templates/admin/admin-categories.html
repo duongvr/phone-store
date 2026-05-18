@@ -1,0 +1,233 @@
+{#include admin/admin-layout pageTitle="Quản lý Danh mục" activeMenu="categories"}
+{#title}Danh mục - Admin{/title}
+
+{#body}
+<div class="admin-card">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 25px; align-items: center;">
+        <div style="position: relative; display: flex; align-items: center;">
+            <lord-icon src="https://cdn.lordicon.com/vgxjrbxm.json" trigger="hover" colors="primary:#94a3b8" style="width:20px;height:20px;position:absolute;left:12px;"></lord-icon>
+            <input type="text" id="categorySearch" placeholder="Tìm kiếm danh mục..." style="padding: 12px 12px 12px 40px; width: 350px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none;" oninput="filterCategories()">
+        </div>
+        <button class="btn btn-primary" onclick="openCategoryModal()" style="display: flex; align-items: center; gap: 8px;">
+            <lord-icon src="https://cdn.lordicon.com/pdsourjo.json" trigger="hover" colors="primary:#ffffff" style="width:18px;height:18px"></lord-icon>
+            + Thêm Danh mục
+        </button>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+            <tr>
+                <th style="width: 80px;">ID</th>
+                <th style="width: 100px;">Icon</th>
+                <th>Tên Danh mục</th>
+                <th>Slug</th>
+                <th>Mô tả</th>
+                <th style="width: 150px; text-align: center;">Hành động</th>
+            </tr>
+            </thead>
+            <tbody id="categoriesBody">
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 60px; color: #94a3b8;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <lord-icon src="https://cdn.lordicon.com/vosfvrme.json" trigger="loop" colors="primary:#94a3b8" style="width:40px;height:40px"></lord-icon>
+                        Đang tải dữ liệu...
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Thêm/Sửa Danh mục -->
+<div id="categoryModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 30px; border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+        <h3 id="modalTitle" style="margin-bottom: 20px; font-size: 20px; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">Thêm Danh mục mới</h3>
+        <form id="categoryForm" onsubmit="saveCategory(event)">
+            <input type="hidden" id="categoryId">
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #475569; font-size: 14px;">Tên danh mục *</label>
+                <input type="text" id="catName" required style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; transition: all 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='#cbd5e1'">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #475569; font-size: 14px;">Đường dẫn (Slug)</label>
+                <input type="text" id="catSlug" placeholder="tu-dong-tao-neu-de-trong" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; transition: all 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='#cbd5e1'">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #475569; font-size: 14px;">Icon URL</label>
+                <input type="text" id="catIcon" placeholder="https://..." style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; transition: all 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='#cbd5e1'">
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #475569; font-size: 14px;">Mô tả</label>
+                <textarea id="catDesc" rows="3" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; resize: vertical; transition: all 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='#cbd5e1'"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeCategoryModal()">Hủy bỏ</button>
+                <button type="submit" class="btn btn-primary" style="display: flex; align-items: center; gap: 8px;">
+                    <lord-icon src="https://cdn.lordicon.com/jxwksgwv.json" trigger="hover" colors="primary:#ffffff" style="width:18px;height:18px"></lord-icon>
+                    Lưu danh mục
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let allCategories = [];
+
+    document.addEventListener("DOMContentLoaded", function() {
+        loadCategories();
+    });
+
+    async function loadCategories() {
+        try {
+            const res = await fetch(API + "/categories");
+            if (res.ok) {
+                allCategories = await res.json();
+                renderCategories(allCategories);
+            } else {
+                document.getElementById("categoriesBody").innerHTML = '<tr><td colspan="6" style="text-align:center; color:#ef4444; padding: 40px;">Lỗi tải dữ liệu</td></tr>';
+            }
+        } catch (e) {
+            console.error("Error:", e);
+        }
+    }
+
+    function renderCategories(categories) {
+        const body = document.getElementById("categoriesBody");
+        if (!categories || categories.length === 0) {
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px; color: #94a3b8;">Không có danh mục nào</td></tr>';
+            return;
+        }
+
+        let html = '';
+        categories.sort((a,b) => b.id - a.id).forEach(c => {
+            const iconHtml = c.iconUrl ? `<img src="$\{c.iconUrl}" style="width:40px;height:40px;object-fit:contain;border-radius:8px;background:#f8fafc;padding:4px;border:1px solid #e2e8f0;">` : `<div style="width:40px;height:40px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;color:#94a3b8;border:1px solid #e2e8f0;font-size:12px;">N/A</div>`;
+            
+            html += `
+                <tr>
+                    <td style="color: #64748b; font-weight: 500;">#$\{c.id}</td>
+                    <td>$\{iconHtml}</td>
+                    <td>
+                        <div style="font-weight: 600; color: #1e293b; font-size: 15px;">$\{c.name}</div>
+                    </td>
+                    <td><span style="color: #64748b; font-family: monospace; background: #f8fafc; padding: 4px 8px; border-radius: 4px; font-size: 13px;">$\{c.slug || ''}</span></td>
+                    <td style="color: #475569; font-size: 14px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">$\{c.description || '<span style="color:#cbd5e1;font-style:italic;">Không có mô tả</span>'}</td>
+                    <td>
+                        <div style="display: flex; justify-content: center; gap: 8px;">
+                            <button class="btn" title="Sửa danh mục" onclick="editCategory($\{c.id})" style="padding: 8px; border-radius: 8px; background: #eff6ff; border: 1px solid #dbeafe;">
+                                <lord-icon src="https://cdn.lordicon.com/bxxnzvfm.json" trigger="hover" colors="primary:#3b82f6" style="width:20px;height:20px"></lord-icon>
+                            </button>
+                            <button class="btn" title="Xóa danh mục" onclick="deleteCategory($\{c.id})" style="padding: 8px; border-radius: 8px; background: #fef2f2; border: 1px solid #fee2e2;">
+                                <lord-icon src="https://cdn.lordicon.com/skkahier.json" trigger="hover" colors="primary:#ef4444" style="width:20px;height:20px"></lord-icon>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        body.innerHTML = html;
+    }
+
+    function filterCategories() {
+        const q = document.getElementById("categorySearch").value.toLowerCase();
+        const filtered = allCategories.filter(c => 
+            (c.name && c.name.toLowerCase().includes(q)) || 
+            (c.slug && c.slug.toLowerCase().includes(q)) ||
+            (c.description && c.description.toLowerCase().includes(q))
+        );
+        renderCategories(filtered);
+    }
+
+    function openCategoryModal() {
+        document.getElementById("categoryId").value = "";
+        document.getElementById("catName").value = "";
+        document.getElementById("catSlug").value = "";
+        document.getElementById("catIcon").value = "";
+        document.getElementById("catDesc").value = "";
+        document.getElementById("modalTitle").textContent = "Thêm Danh mục mới";
+        document.getElementById("categoryModal").style.display = "flex";
+    }
+
+    function closeCategoryModal() {
+        document.getElementById("categoryModal").style.display = "none";
+    }
+
+    function editCategory(id) {
+        const cat = allCategories.find(c => c.id === id);
+        if (cat) {
+            document.getElementById("categoryId").value = cat.id;
+            document.getElementById("catName").value = cat.name || "";
+            document.getElementById("catSlug").value = cat.slug || "";
+            document.getElementById("catIcon").value = cat.iconUrl || "";
+            document.getElementById("catDesc").value = cat.description || "";
+            document.getElementById("modalTitle").textContent = "Cập nhật Danh mục";
+            document.getElementById("categoryModal").style.display = "flex";
+        }
+    }
+
+    async function saveCategory(e) {
+        e.preventDefault();
+        const id = document.getElementById("categoryId").value;
+        const data = {
+            name: document.getElementById("catName").value,
+            slug: document.getElementById("catSlug").value,
+            iconUrl: document.getElementById("catIcon").value,
+            description: document.getElementById("catDesc").value
+        };
+
+        const url = id ? `$\{API}/categories/$\{id}` : `$\{API}/categories`;
+        const method = id ? "PUT" : "POST";
+
+        try {
+            const res = await fetch(url, {
+                method: method,
+                headers: getAuthHeader(),
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                showToast(id ? "Cập nhật thành công!" : "Thêm danh mục thành công!", "success");
+                closeCategoryModal();
+                loadCategories();
+            } else {
+                const err = await res.json();
+                showToast(err.message || "Lỗi khi lưu danh mục", "error");
+            }
+        } catch (e) {
+            console.error(e);
+            showToast("Lỗi kết nối", "error");
+        }
+    }
+
+    async function deleteCategory(id) {
+        if (!confirm("Bạn có chắc chắn muốn xóa danh mục này? Việc này có thể ảnh hưởng đến các sản phẩm thuộc danh mục.")) return;
+
+        try {
+            const res = await fetch(`$\{API}/categories/$\{id}`, {
+                method: "DELETE",
+                headers: getAuthHeader()
+            });
+
+            if (res.ok) {
+                showToast("Xóa danh mục thành công!", "success");
+                loadCategories();
+            } else {
+                const err = await res.json();
+                showToast(err.message || "Không thể xóa danh mục. Có thể vẫn còn sản phẩm.", "error");
+            }
+        } catch (e) {
+            console.error(e);
+            showToast("Lỗi kết nối", "error");
+        }
+    }
+</script>
+
+{/body}
+{/include}

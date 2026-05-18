@@ -3,27 +3,41 @@
 
 {#body}
 <div class="admin-card">
-    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-        <input type="text" id="userSearch" placeholder="Tìm kiếm user (email, sđt)..." style="padding: 10px; width: 300px; border: 1px solid #ddd; border-radius: 4px;" oninput="filterUsers()">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 25px; align-items: center;">
+        <div style="position: relative; display: flex; align-items: center;">
+            <lord-icon src="https://cdn.lordicon.com/vgxjrbxm.json" trigger="hover" colors="primary:#94a3b8" style="width:20px;height:20px;position:absolute;left:12px;"></lord-icon>
+            <input type="text" id="userSearch" placeholder="Tìm kiếm người dùng (email, sđt)..." style="padding: 12px 12px 12px 40px; width: 350px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none;" oninput="filterUsers()">
+        </div>
+        <button class="btn btn-primary" onclick="loadUsers()" style="display: flex; align-items: center; gap: 8px;">
+            <lord-icon src="https://cdn.lordicon.com/rsitunbt.json" trigger="hover" colors="primary:#ffffff" style="width:18px;height:18px"></lord-icon>
+            Làm mới
+        </button>
     </div>
 
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Họ tên</th>
-            <th>Email / SĐT</th>
-            <th>Phân quyền</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-        </tr>
-        </thead>
-        <tbody id="usersBody">
-        <tr>
-            <td colspan="6" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td>
-        </tr>
-        </tbody>
-    </table>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+            <tr>
+                <th style="width: 80px;">ID</th>
+                <th>Họ tên</th>
+                <th>Email / SĐT</th>
+                <th style="width: 150px;">Phân quyền</th>
+                <th style="width: 150px;">Trạng thái</th>
+                <th style="width: 150px; text-align: center;">Hành động</th>
+            </tr>
+            </thead>
+            <tbody id="usersBody">
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 60px; color: #94a3b8;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <lord-icon src="https://cdn.lordicon.com/vosfvrme.json" trigger="loop" colors="primary:#94a3b8" style="width:40px;height:40px"></lord-icon>
+                        Đang tải dữ liệu...
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
@@ -40,7 +54,7 @@
                 allUsers = await res.json();
                 renderUsers(allUsers);
             } else {
-                document.getElementById("usersBody").innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Lỗi tải dữ liệu</td></tr>';
+                document.getElementById("usersBody").innerHTML = '<tr><td colspan="6" style="text-align:center; color:#ef4444; padding: 40px;">Lỗi tải dữ liệu người dùng</td></tr>';
             }
         } catch (e) {
             console.error("Error:", e);
@@ -50,24 +64,46 @@
     function renderUsers(users) {
         const body = document.getElementById("usersBody");
         if (!users || users.length === 0) {
-            body.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không tìm thấy người dùng nào</td></tr>';
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px; color: #94a3b8;">Không tìm thấy người dùng nào</td></tr>';
             return;
         }
 
         let html = '';
-        users.forEach(u => {
-            const roleStyle = u.role === 'ADMIN' ? 'background: #fce4ec; color: #c2185b;' : 'background: #e1f5fe; color: #0288d1;';
-            const roleLabel = u.role === 'ADMIN' ? 'Quản trị viên' : 'Khách hàng';
+        users.sort((a,b) => b.id - a.id).forEach(u => {
+            const is_admin = (u.role === 'ADMIN' || u.role === 'admin');
+            const roleStyle = is_admin ? 'background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2;' : 'background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe;';
+            const roleLabel = is_admin ? 'Quản trị viên' : 'Khách hàng';
+            
+            const isActive = u.active !== false;
+            const statusStyle = isActive ? 'background: #ecfdf5; color: #059669; border: 1px solid #d1fae5;' : 'background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2;';
+            const statusLabel = isActive ? 'Hoạt động' : 'Bị khóa';
+            
+            const actionBtnTitle = isActive ? 'Khóa tài khoản' : 'Mở khóa tài khoản';
+            const actionBtnIcon = isActive ? 'https://cdn.lordicon.com/skkahier.json' : 'https://cdn.lordicon.com/bxxnzvfm.json';
+            const actionBtnColor = isActive ? 'primary:#ef4444' : 'primary:#10b981';
             
             html += `
                 <tr>
-                    <td>#$\{u.id}</td>
-                    <td style="font-weight: 600;">$\{u.fullName || 'N/A'}</td>
-                    <td>$\{u.email}<br><span style="font-size:12px; color:#666;">$\{u.phone || ''}</span></td>
-                    <td><span style="$\{roleStyle} padding: 4px 8px; border-radius: 4px; font-size: 12px;">$\{roleLabel}</span></td>
-                    <td><span style="color: #27ae60; font-weight: 600;">Hoạt động</span></td>
+                    <td style="color: #64748b;">#$\{u.id}</td>
                     <td>
-                        <button class="btn btn-danger" style="font-size: 12px;" onclick="toggleLock($\{u.id})">Khóa TK</button>
+                        <div style="font-weight: 600; color: #1e293b;">$\{u.fullName || 'Người dùng'}</div>
+                    </td>
+                    <td>
+                        <div style="color: #1e293b;">$\{u.email}</div>
+                        <div style="font-size:12px; color:#64748b;">$\{u.phone || 'Chưa cập nhật SĐT'}</div>
+                    </td>
+                    <td>
+                        <span style="$\{roleStyle} padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">$\{roleLabel}</span>
+                    </td>
+                    <td>
+                        <span style="$\{statusStyle} padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">$\{statusLabel}</span>
+                    </td>
+                    <td>
+                        <div style="display: flex; justify-content: center; gap: 8px;">
+                            <button class="btn" title="$\{actionBtnTitle}" onclick="toggleLock($\{u.id}, $\{isActive})" style="padding: 8px; border-radius: 8px; background: $\{isActive ? '#fef2f2' : '#ecfdf5'}; border: 1px solid $\{isActive ? '#fee2e2' : '#d1fae5'};">
+                                <lord-icon src="$\{actionBtnIcon}" trigger="hover" colors="$\{actionBtnColor}" style="width:20px;height:20px"></lord-icon>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -85,9 +121,30 @@
         renderUsers(filtered);
     }
 
-    async function toggleLock(id) {
-        showToast("Tính năng đang được phát triển", "info");
+    async function toggleLock(id, isActive) {
+        const actionText = isActive ? "khóa" : "mở khóa";
+        if (!confirm(`Bạn có chắc muốn $\{actionText} tài khoản này?`)) return;
+        
+        try {
+            const endpoint = isActive ? `/api/users/$\{id}/deactivate` : `/api/users/$\{id}/activate`;
+            const res = await fetch(endpoint, {
+                method: "POST",
+                headers: getAuthHeader()
+            });
+            
+            if (res.ok) {
+                showToast(`Đã $\{actionText} tài khoản thành công!`, "success");
+                loadUsers();
+            } else {
+                const data = await res.json();
+                showToast(data.message || `Lỗi khi $\{actionText} tài khoản`, "error");
+            }
+        } catch (e) {
+            console.error(e);
+            showToast(`Lỗi khi $\{actionText} tài khoản`, "error");
+        }
     }
 </script>
+
 {/body}
 {/include}

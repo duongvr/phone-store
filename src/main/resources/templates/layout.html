@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{#insert title}Phone Store{/insert}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- NGUYÊN TẮC 1: Script Lordicon duy nhất tại layout.html -->
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <style>
         * {
             margin: 0;
@@ -88,8 +90,9 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Nav */
@@ -131,10 +134,13 @@
         .cart-btn {
             position: relative;
             text-decoration: none;
-            font-size: 22px;
             padding: 8px;
             border-radius: 8px;
             transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
         }
 
         .cart-btn:hover {
@@ -161,11 +167,13 @@
         .wishlist-btn {
             position: relative;
             text-decoration: none;
-            font-size: 22px;
             padding: 8px;
             border-radius: 8px;
             transition: background 0.2s;
             color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .wishlist-btn:hover {
@@ -236,6 +244,12 @@
             align-items: center;
             gap: 10px;
             cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .user-menu:hover {
+            background: #f0f2f5;
         }
 
         .user-info {
@@ -270,7 +284,7 @@
 
         .dropdown {
             position: absolute;
-            top: calc(100% + 12px);
+            top: calc(100% + 8px);
             right: 0;
             background: white;
             border-radius: 12px;
@@ -333,25 +347,6 @@
             display: block;
         }
 
-        .user-menu {
-            padding: 8px;
-            border-radius: 8px;
-        }
-
-        .user-menu:hover {
-            background: #f0f2f5;
-        }
-
-        .dropdown {
-            top: calc(100% + 8px);
-        }
-
-        /* Improve dropdown accessibility */
-        .user-menu:hover .dropdown,
-        .dropdown:hover {
-            display: block !important;
-        }
-
         /* Admin badge */
         .admin-link {
             display: none;
@@ -363,6 +358,8 @@
             font-weight: 700;
             font-size: 13px;
             border: 1px solid #ffc107;
+            align-items: center;
+            gap: 5px;
         }
 
         /* ===== MAIN ===== */
@@ -434,6 +431,19 @@
             color: #888;
         }
 
+        .footer-bottom .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         /* ===== UTILITIES ===== */
         .page-title {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -449,11 +459,6 @@
             font-weight: 700;
         }
 
-        .page-title p {
-            font-size: 15px;
-            opacity: 0.9;
-        }
-
         .section-title {
             font-size: 28px;
             font-weight: 700;
@@ -461,6 +466,9 @@
             margin-bottom: 30px;
             position: relative;
             padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .section-title::after {
@@ -498,58 +506,21 @@
             opacity: 1;
         }
 
-        .toast.success {
-            background: #27ae60;
-        }
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #e74c3c; }
+        .toast.info { background: #667eea; }
 
-        .toast.error {
-            background: #e74c3c;
-        }
-
-        .toast.info {
-            background: #667eea;
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
             header .container {
                 padding-top: 10px;
                 padding-bottom: 10px;
                 flex-wrap: wrap;
             }
-
-            .logo {
-                font-size: 18px;
-            }
-
-            .search-bar {
-                order: 3;
-                max-width: 100%;
-                width: 100%;
-                margin-top: 10px;
-                display: block; /* Show search on mobile but full width */
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .user-name {
-                display: none;
-            }
-
-            .nav-right {
-                gap: 4px;
-            }
-
-            .auth-buttons {
-                gap: 4px;
-            }
-
-            .btn-login, .btn-register {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
+            .logo { font-size: 18px; }
+            .search-bar { order: 3; max-width: 100%; width: 100%; margin-top: 10px; }
+            .nav-links, .user-name { display: none; }
+            .nav-right, .auth-buttons { gap: 4px; }
+            .btn-login, .btn-register { padding: 6px 12px; font-size: 12px; }
         }
     </style>
     {#insert head}{/insert}
@@ -559,12 +530,20 @@
 
     <header>
         <div class="container">
-            <a href="/" class="logo">📱 PHONE STORE</a>
+            <a href="/" class="logo">
+                <lord-icon src="https://cdn.lordicon.com/itfrgdzq.json" trigger="hover" colors="primary:#667eea"
+                    style="width:32px;height:32px">
+                </lord-icon> PHONE STORE
+            </a>
 
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="Tìm kiếm điện thoại, phụ kiện..."
                     onkeydown="handleSearch(event)">
-                <button onclick="doSearch()">🔍</button>
+                <button onclick="doSearch()">
+                    <lord-icon src="https://cdn.lordicon.com/vgxjrbxm.json" trigger="hover"
+                        colors="primary:#667eea" style="width:24px;height:24px">
+                    </lord-icon>
+                </button>
             </div>
 
             <div class="nav-right">
@@ -572,19 +551,28 @@
                     <li><a href="/">Trang chủ</a></li>
                     <li><a href="/products">Sản phẩm</a></li>
                     <li><a href="/promotions">Khuyến mãi</a></li>
+                    <li><a href="/news">Tin tức</a></li>
                 </ul>
 
                 <a href="/cart" class="cart-btn" title="Giỏ hàng">
-                    🛒
+                    <lord-icon src="https://cdn.lordicon.com/edkuxwya.json" trigger="hover"
+                        colors="primary:#333" style="width:28px;height:28px">
+                    </lord-icon>
                     <span class="cart-badge" id="cartBadge">0</span>
                 </a>
 
                 <a href="/wishlist" class="wishlist-btn" title="Sản phẩm yêu thích">
-                    ❤️
+                    <lord-icon src="https://cdn.lordicon.com/qlrjanhh.json" trigger="hover"
+                        colors="primary:#e74c3c" style="width:28px;height:28px">
+                    </lord-icon>
                     <span class="wishlist-badge" id="wishlistBadge">0</span>
                 </a>
 
-                <a href="/admin/products" class="admin-link" id="adminLink">⚙️ Admin</a>
+                <a href="/admin/products" class="admin-link" id="adminLink">
+                    <lord-icon src="https://cdn.lordicon.com/hwuyqzpw.json" trigger="hover"
+                        colors="primary:#d35400" style="width:20px;height:20px">
+                    </lord-icon> Admin
+                </a>
 
                 <div class="auth-buttons" id="guestButtons">
                     <a href="/login" class="btn-login">Đăng nhập</a>
@@ -601,12 +589,27 @@
                             <div class="d-name" id="dropdownName">Người dùng</div>
                             <div class="d-email" id="dropdownEmail">user@example.com</div>
                         </div>
-                        <a href="/profile">👤 Thông tin cá nhân</a>
-                        <a href="/addresses">📍 Sổ địa chỉ</a>
-                        <a href="/orders">📦 Đơn hàng của tôi</a>
-                        <a href="/cart">🛒 Giỏ hàng</a>
+                        <a href="/profile">
+                            <lord-icon src="https://cdn.lordicon.com/atzcyedn.json" trigger="hover"
+                                colors="primary:#667eea" style="width:22px;height:22px">
+                            </lord-icon> Thông tin cá nhân
+                        </a>
+                        <a href="/addresses">
+                            <lord-icon src="https://cdn.lordicon.com/njlzolhx.json" trigger="hover"
+                                colors="primary:#667eea" style="width:22px;height:22px">
+                            </lord-icon> Sổ địa chỉ
+                        </a>
+                        <a href="/orders">
+                            <lord-icon src="https://cdn.lordicon.com/dusieuvj.json" trigger="hover"
+                                colors="primary:#667eea" style="width:22px;height:22px">
+                            </lord-icon> Đơn hàng của tôi
+                        </a>
                         <div class="divider"></div>
-                        <a href="#" class="logout" onclick="logout(); return false;">🚪 Đăng xuất</a>
+                        <a href="#" class="logout" onclick="logout(); return false;">
+                            <lord-icon src="https://cdn.lordicon.com/zifyscfa.json" trigger="hover"
+                                colors="primary:#e74c3c" style="width:22px;height:22px">
+                            </lord-icon> Đăng xuất
+                        </a>
                     </div>
                 </div>
             </div>
@@ -621,9 +624,12 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <a href="/" class="logo">📱 PHONE STORE</a>
-                    <p>Chuyên cung cấp điện thoại chính hãng với giá tốt nhất thị trường. Giao hàng nhanh, bảo hành uy
-                        tín.</p>
+                    <a href="/" class="logo" style="color:white;">
+                        <lord-icon src="https://cdn.lordicon.com/itfrgdzq.json" trigger="hover" colors="primary:#ffffff"
+                            style="width:32px;height:32px">
+                        </lord-icon> PHONE STORE
+                    </a>
+                    <p>Chuyên cung cấp điện thoại chính hãng với giá tốt nhất thị trường. Giao hàng nhanh, bảo hành uy tín.</p>
                 </div>
                 <div class="footer-col">
                     <h4>Sản phẩm</h4>
@@ -632,6 +638,7 @@
                         <li><a href="/products?category=1">iPhone</a></li>
                         <li><a href="/products?category=2">Samsung</a></li>
                         <li><a href="/promotions">Khuyến mãi</a></li>
+                        <li><a href="/news">Tin tức công nghệ</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -655,8 +662,23 @@
             </div>
             <div class="footer-bottom">
                 <span>&copy; 2026 Phone Store. Tất cả quyền được bảo lưu.</span>
-                <span>📍 123 Đường ABC, Nam Từ Liêm, TP.Hà Nội &nbsp;|&nbsp; 📞 1900 1234 &nbsp;|&nbsp; 📧
-                    support@phonestore.vn</span>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <lord-icon src="https://cdn.lordicon.com/njlzolhx.json" trigger="hover"
+                            colors="primary:#aaa" style="width:16px;height:16px">
+                        </lord-icon> 123 Đường ABC, Hà Nội
+                    </div>
+                    <div class="contact-item">
+                        <lord-icon src="https://cdn.lordicon.com/wtywrnoz.json" trigger="loop" delay="2000"
+                            colors="primary:#aaa" style="width:16px;height:16px">
+                        </lord-icon> 1900 1234
+                    </div>
+                    <div class="contact-item">
+                        <lord-icon src="https://cdn.lordicon.com/icuxkywm.json" trigger="hover"
+                            colors="primary:#aaa" style="width:16px;height:16px">
+                        </lord-icon> support@phonestore.vn
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
@@ -678,7 +700,6 @@
 
         async function loadUserInfo(token) {
             try {
-                // Verify token và lấy userId
                 const verifyRes = await fetch("/api/users/verify-token", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -689,10 +710,10 @@
                     return;
                 }
                 const verifyData = await verifyRes.json();
-                // Lấy thông tin user theo userId
                 const userRes = await fetch("/api/users/" + verifyData.userId);
                 if (userRes.ok) {
                     const user = await userRes.json();
+                    localStorage.setItem("user_id", user.id);
                     showUserUI(user);
                 } else {
                     localStorage.removeItem("jwt_token");
@@ -717,24 +738,22 @@
             document.getElementById("dropdownEmail").textContent = email;
 
             if (user.role === "ADMIN") {
-                document.getElementById("adminLink").style.display = "inline-block";
+                document.getElementById("adminLink").style.display = "inline-flex";
             }
         }
 
         function logout() {
             localStorage.removeItem("jwt_token");
-            localStorage.removeItem("cart");
-            showToast("Đã đăng xuất thành công", "info");
-            setTimeout(() => window.location.href = "/", 800);
+            localStorage.removeItem("user_id");
+            window.location.href = "/";
         }
 
-        // ===== CART BADGE =====
+        // ===== CART & WISHLIST BADGES =====
         function updateCartBadge() {
             const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-            const total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
             const badge = document.getElementById("cartBadge");
-            if (total > 0) {
-                badge.textContent = total > 99 ? "99+" : total;
+            if (cart.length > 0) {
+                badge.textContent = cart.length;
                 badge.style.display = "flex";
             } else {
                 badge.style.display = "none";
@@ -743,36 +762,13 @@
 
         function updateWishlistBadge() {
             const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-            const total = wishlist.length;
             const badge = document.getElementById("wishlistBadge");
-            if (total > 0) {
-                badge.textContent = total > 99 ? "99+" : total;
+            if (wishlist.length > 0) {
+                badge.textContent = wishlist.length;
                 badge.style.display = "flex";
             } else {
                 badge.style.display = "none";
             }
-        }
-
-        function toggleWishlist(productId) {
-            let wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-            const index = wishlist.indexOf(productId);
-            if (index > -1) {
-                wishlist.splice(index, 1);
-                showToast("Đã xóa khỏi danh sách yêu thích", "info");
-            } else {
-                wishlist.push(productId);
-                showToast("Đã thêm vào danh sách yêu thích ❤️", "success");
-            }
-            localStorage.setItem("wishlist", JSON.stringify(wishlist));
-            updateWishlistBadge();
-            
-            // Trigger custom event for components to update their heart icon state
-            document.dispatchEvent(new CustomEvent('wishlistUpdated', { detail: { productId, wishlist } }));
-        }
-
-        function isFavorite(productId) {
-            const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-            return wishlist.includes(productId);
         }
 
         // ===== SEARCH =====
@@ -782,48 +778,56 @@
 
         function doSearch() {
             const q = document.getElementById("searchInput").value.trim();
-            if (q) window.location.href = "/products?q=" + encodeURIComponent(q);
+            if (q) window.location.href = "/products?search=" + encodeURIComponent(q);
         }
 
-        // ===== TOAST =====
-        function showToast(message, type) {
-            const toast = document.getElementById("toast");
-            toast.textContent = message;
-            toast.className = "toast " + (type || "info") + " show";
-            setTimeout(() => toast.className = "toast", 3000);
-        }
-
-        // ===== ADD TO CART (global) =====
-        function addToCart(productId, productName, productPrice, productImage) {
-            const token = localStorage.getItem("jwt_token");
-            if (!token) {
-                showToast("Vui lòng đăng nhập để thêm vào giỏ hàng", "error");
-                setTimeout(() => window.location.href = "/login?redirect=" + encodeURIComponent(window.location.pathname), 1000);
-                return;
-            }
-
-            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-            const existing = cart.find(item => item.id == productId);
-            if (existing) {
-                existing.quantity = (existing.quantity || 1) + 1;
-            } else {
-                cart.push({ id: productId, name: productName, price: productPrice, image: productImage, quantity: 1 });
-            }
-            localStorage.setItem("cart", JSON.stringify(cart));
-            updateCartBadge();
-            showToast("✅ Đã thêm vào giỏ hàng!", "success");
-        }
-
-        // ===== FORMAT PRICE =====
+        // ===== SHARED UTILS =====
         function formatPrice(price) {
             return new Intl.NumberFormat("vi-VN").format(price) + " ₫";
         }
 
-        // ===== REQUIRE AUTH =====
+        function showToast(message, type = "info") {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = "toast " + type + " show";
+            setTimeout(() => { toast.className = "toast"; }, 3000);
+        }
+
+        function addToCart(id, name, price, image) {
+            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            const existing = cart.find(i => i.id === id);
+            if (existing) {
+                existing.quantity = (existing.quantity || 1) + 1;
+            } else {
+                cart.push({ id, name, price, image, quantity: 1 });
+            }
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCartBadge();
+            showToast("Đã thêm vào giỏ hàng", "success");
+        }
+
+        function toggleWishlist(id) {
+            let wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+            const index = wishlist.indexOf(id);
+            if (index > -1) {
+                wishlist.splice(index, 1);
+                showToast("Đã xóa khỏi yêu thích", "info");
+            } else {
+                wishlist.push(id);
+                showToast("Đã thêm vào yêu thích", "success");
+            }
+            localStorage.setItem("wishlist", JSON.stringify(wishlist));
+            updateWishlistBadge();
+        }
+
+        function isFavorite(id) {
+            const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+            return wishlist.includes(id);
+        }
+
         function requireAuth(redirectUrl) {
-            const token = localStorage.getItem("jwt_token");
-            if (!token) {
-                window.location.href = "/login?redirect=" + encodeURIComponent(redirectUrl || window.location.pathname);
+            if (!localStorage.getItem("jwt_token")) {
+                window.location.href = "/login?redirect=" + encodeURIComponent(redirectUrl);
                 return false;
             }
             return true;
@@ -834,7 +838,6 @@
             return token ? { "Authorization": "Bearer " + token, "Content-Type": "application/json" } : { "Content-Type": "application/json" };
         }
     </script>
-
 </body>
 
 </html>

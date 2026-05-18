@@ -5,258 +5,122 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{#insert title}Admin - Phone Store{/insert}</title>
+  <!-- Script Lordicon dành cho Layout Admin -->
+  <script src="https://cdn.lordicon.com/lordicon.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      height: 100vh;
-      background-color: #f4f6f9;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; height: 100vh; background-color: #f4f6f9; }
 
     /* Sidebar */
-    .sidebar {
-      width: 260px;
-      background-color: #343a40;
-      color: white;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .sidebar-brand {
-      padding: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      text-align: center;
-      border-bottom: 1px solid #4b545c;
-      background: #2c3136;
-    }
-
-    .sidebar-menu {
-      list-style: none;
-      padding: 10px 0;
-      flex: 1;
-    }
-
-    .sidebar-menu a {
-      display: block;
-      padding: 15px 20px;
-      color: #c2c7d0;
-      text-decoration: none;
-      border-left: 4px solid transparent;
-      transition: 0.2s;
-    }
-
-    .sidebar-menu a:hover,
-    .sidebar-menu a.active {
-      background-color: #494e53;
-      color: white;
-      border-left-color: #667eea;
-    }
+    .sidebar { width: 260px; background-color: #1a1c1e; color: #e1e1e1; display: flex; flex-direction: column; transition: all 0.3s; border-right: 1px solid #2d2f31; }
+    .sidebar-brand { padding: 25px 20px; font-size: 22px; font-weight: 800; text-align: center; border-bottom: 1px solid #2d2f31; background: #1a1c1e; display: flex; align-items: center; justify-content: center; gap: 12px; color: #fff; letter-spacing: 0.5px; }
+    .sidebar-menu { list-style: none; padding: 15px 0; flex: 1; }
+    .sidebar-menu a { display: flex; align-items: center; gap: 14px; padding: 14px 24px; color: #9da3ae; text-decoration: none; border-left: 4px solid transparent; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-weight: 500; }
+    .sidebar-menu a:hover { background-color: #2d2f31; color: #fff; }
+    .sidebar-menu a.active { background-color: #2d2f31; color: #fff; border-left-color: #6366f1; }
 
     /* Main Content */
-    .main-wrapper {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f8fafc; }
+    .topbar { background: white; padding: 15px 40px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; z-index: 10; height: 70px; }
+    .content-area { padding: 40px; flex: 1; overflow-y: auto; }
 
-    .topbar {
-      background: white;
-      padding: 15px 30px;
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 10;
-    }
+    /* Admin Cards & Tables */
+    .admin-card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #edf2f7; margin-bottom: 30px; }
+    
+    table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; }
+    th { background: #f8fafc; padding: 16px 20px; text-align: left; font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid #f1f5f9; }
+    td { padding: 18px 20px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 15px; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background-color: #fcfdfe; }
 
-    .content-area {
-      padding: 30px;
-      flex: 1;
-      overflow-y: auto;
-    }
+    /* Buttons */
+    .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; font-size: 14px; }
+    .btn-primary { background: #6366f1; color: white; }
+    .btn-primary:hover { background: #4f46e5; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
 
-    /* Tables & Buttons */
-    .admin-card {
-      background: white;
-      padding: 25px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #1e293b; color: white; padding: 14px 24px; border-radius: 12px; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { background: #10b981; }
+    .toast.error { background: #ef4444; }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-
-    th,
-    td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-
-    th {
-      background-color: #f8f9fa;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .btn {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 14px;
-    }
-
-    .btn-primary {
-      background: #667eea;
-      color: white;
-    }
-
-    .btn-danger {
-      background: #e74c3c;
-      color: white;
-    }
-
-    .btn-success {
-      background: #27ae60;
-      color: white;
-    }
-
-    /* Responsive */
     @media (max-width: 992px) {
-      .sidebar {
-        width: 70px;
-      }
-      .sidebar-brand, .sidebar-menu a span:not(.icon) {
-        display: none;
-      }
-      .sidebar-brand {
-        font-size: 0;
-        padding: 20px 0;
-      }
-      .sidebar-brand::before {
-        content: "⚙️";
-        font-size: 20px;
-        display: block;
-        text-align: center;
-      }
-      .sidebar-menu a {
-        text-align: center;
-        padding: 15px 0;
-      }
+      .sidebar { width: 80px; }
+      .sidebar-brand span, .sidebar-menu a span:not(.icon) { display: none; }
+      .sidebar-menu a { justify-content: center; padding: 18px 0; }
+      .content-area { padding: 20px; }
     }
-
-    @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
-      .sidebar {
-        width: 100%;
-        height: auto;
-      }
-      .sidebar-menu {
-        display: flex;
-        flex-wrap: wrap;
-        padding: 0;
-      }
-      .sidebar-menu li {
-        flex: 1;
-        min-width: 20%;
-      }
-      .sidebar-menu a {
-        padding: 10px 5px;
-        font-size: 12px;
-        border-left: none;
-        border-bottom: 3px solid transparent;
-      }
-      .sidebar-menu a:hover, .sidebar-menu a.active {
-        border-bottom-color: #667eea;
-      }
-      .topbar {
-        padding: 10px 15px;
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-      }
-      .content-area {
-        padding: 15px;
-      }
-      .admin-card {
-        padding: 15px;
-        overflow-x: auto;
-      }
-      table {
-        min-width: 600px;
-      }
-    }
-    /* Toast notification */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: #333;
-      color: white;
-      padding: 14px 20px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 500;
-      z-index: 9999;
-      transform: translateY(100px);
-      opacity: 0;
-      transition: all 0.3s;
-      max-width: 320px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    .toast.success { background: #27ae60; }
-    .toast.error { background: #e74c3c; }
-    .toast.info { background: #667eea; }
   </style>
   {#insert head}{/insert}
 </head>
 
 <body>
   <div class="sidebar">
-    <div class="sidebar-brand">⚙️ Admin Panel</div>
+    <div class="sidebar-brand">
+      <lord-icon src="https://cdn.lordicon.com/hwuyqzpw.json" trigger="loop" delay="2000" colors="primary:#ffffff" style="width:32px;height:32px"></lord-icon>
+      <span>Phone Store</span>
+    </div>
     <ul class="sidebar-menu">
-      <li><a href="/admin/dashboard" class="{#if activeMenu.or('') == 'dashboard'}active{/if}">📊 Tổng quan</a></li>
-      <li><a href="/admin/products" class="{#if activeMenu.or('') == 'products'}active{/if}">📱 Quản lý Sản phẩm</a>
+      <li>
+        <a href="/admin/dashboard" class="{#if activeMenu.or('') == 'dashboard'}active{/if}">
+          <lord-icon src="https://cdn.lordicon.com/pxruoilz.json" trigger="hover" colors="primary:#9da3ae" style="width:22px;height:22px"></lord-icon>
+          <span>Tổng quan</span>
+        </a>
       </li>
-      <li><a href="/admin/orders" class="{#if activeMenu.or('') == 'orders'}active{/if}">🛒 Quản lý Đơn hàng</a></li>
-      <li><a href="/admin/users" class="{#if activeMenu.or('') == 'users'}active{/if}">👥 Quản lý Người dùng</a></li>
-      <li><a href="/admin/promotions" class="{#if activeMenu.or('') == 'promotions'}active{/if}">🎁 Quản lý Khuyến
-          mãi</a></li>
-      <li style="margin-top: 20px; border-top: 1px solid #4b545c;">
-        <a href="/">🔙 Quay lại Website</a>
+      <li>
+        <a href="/admin/products" class="{#if activeMenu.or('') == 'products'}active{/if}">
+          <lord-icon src="https://cdn.lordicon.com/qhgmphtg.json" trigger="hover" colors="primary:#9da3ae" style="width:22px;height:22px"></lord-icon>
+          <span>Quản lý Sản phẩm</span>
+        </a>
+      </li>
+      <li>
+        <a href="/admin/categories" class="{#if activeMenu.or('') == 'categories'}active{/if}">
+          <lord-icon src="https://cdn.lordicon.com/ajkxzzfb.json" trigger="hover" colors="primary:#9da3ae" style="width:22px;height:22px"></lord-icon>
+          <span>Quản lý Danh mục</span>
+        </a>
+      </li>
+      <li>
+        <a href="/admin/orders" class="{#if activeMenu.or('') == 'orders'}active{/if}">
+          <lord-icon src="https://cdn.lordicon.com/dusieuvj.json" trigger="hover" colors="primary:#9da3ae" style="width:22px;height:22px"></lord-icon>
+          <span>Quản lý Đơn hàng</span>
+        </a>
+      </li>
+      <li>
+        <a href="/admin/users" class="{#if activeMenu.or('') == 'users'}active{/if}">
+          <lord-icon src="https://cdn.lordicon.com/dxjqoygy.json" trigger="hover" colors="primary:#9da3ae" style="width:22px;height:22px"></lord-icon>
+          <span>Quản lý Người dùng</span>
+        </a>
+      </li>
+      <li>
+        <a href="/admin/promotions" class="{#if activeMenu.or('') == 'promotions'}active{/if}">
+          <lord-icon src="https://cdn.lordicon.com/yqzmiobz.json" trigger="hover" colors="primary:#9da3ae" style="width:22px;height:22px"></lord-icon>
+          <span>Khuyến mãi</span>
+        </a>
+      </li>
+      <li style="margin-top: auto; padding-top: 20px; border-top: 1px solid #2d2f31;">
+        <a href="/">
+          <lord-icon src="https://cdn.lordicon.com/vduvxptl.json" trigger="hover" colors="primary:#9da3ae" style="width:22px;height:22px"></lord-icon>
+          <span>Quay lại Website</span>
+        </a>
       </li>
     </ul>
   </div>
 
   <div class="main-wrapper">
     <div class="topbar">
-      <h2 style="font-size: 20px; color: #333;">{pageTitle.or('Bảng điều khiển')}</h2>
-      <div>
-        Xin chào, <strong>Quản trị viên</strong> | <a href="/logout"
-          style="color: #e74c3c; text-decoration: none; margin-left: 10px;">Đăng xuất</a>
+      <h2 style="font-size: 22px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 12px;">
+        {pageTitle.or('Bảng điều khiển')}
+      </h2>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: #f1f5f9; border-radius: 10px;">
+          <lord-icon src="https://cdn.lordicon.com/atzcyedn.json" trigger="hover" colors="primary:#475569" style="width:24px;height:24px"></lord-icon>
+          <strong style="color: #475569; font-size: 14px;">Quản trị viên</strong>
+        </div>
+        <a href="/logout" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px;">
+          <lord-icon src="https://cdn.lordicon.com/zifyscfa.json" trigger="hover" colors="primary:#ef4444" style="width:20px;height:20px"></lord-icon>
+          Đăng xuất
+        </a>
       </div>
     </div>
     <div class="content-area">
@@ -268,35 +132,28 @@
 
   <script>
     const API = "http://localhost:8080/api";
-
     function getAuthHeader() {
       const token = localStorage.getItem("jwt_token");
       return token ? { "Authorization": "Bearer " + token, "Content-Type": "application/json" } : { "Content-Type": "application/json" };
     }
-
-    function formatPrice(price) {
-      return new Intl.NumberFormat("vi-VN").format(price) + " ₫";
-    }
-
+    function formatPrice(price) { return new Intl.NumberFormat("vi-VN").format(price) + " ₫"; }
     function showToast(message, type) {
       const toast = document.getElementById("toast");
-      if (!toast) return;
       toast.textContent = message;
       toast.className = "toast " + (type || "info") + " show";
       setTimeout(() => toast.className = "toast", 3000);
     }
-
+    
     function getStatusStyle(status) {
-      switch (status) {
-        case 'PENDING': return { bg: '#fff3cd', color: '#d35400', label: 'Chờ xác nhận' };
-        case 'CONFIRMED': return { bg: '#cce5ff', color: '#004085', label: 'Đã xác nhận' };
-        case 'SHIPPING': return { bg: '#d1ecf1', color: '#0c5460', label: 'Đang giao' };
-        case 'DELIVERED': return { bg: '#d4edda', color: '#155724', label: 'Đã giao' };
-        case 'CANCELLED': return { bg: '#f8d7da', color: '#721c24', label: 'Đã hủy' };
-        default: return { bg: '#e2e3e5', color: '#383d41', label: status };
+      switch(status) {
+        case 'PENDING': return { bg: '#fff7ed', color: '#c2410c', label: 'Chờ xử lý' };
+        case 'CONFIRMED': return { bg: '#eff6ff', color: '#1d4ed8', label: 'Đã xác nhận' };
+        case 'SHIPPING': return { bg: '#f0f9ff', color: '#0369a1', label: 'Đang giao' };
+        case 'DELIVERED': return { bg: '#ecfdf5', color: '#047857', label: 'Đã giao' };
+        case 'CANCELLED': return { bg: '#fef2f2', color: '#b91c1c', label: 'Đã hủy' };
+        default: return { bg: '#f1f5f9', color: '#475569', label: status };
       }
     }
   </script>
 </body>
-
 </html>

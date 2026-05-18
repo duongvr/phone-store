@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `phoneshopdb` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `phoneshopdb`;
 -- MySQL dump 10.13  Distrib 8.0.44, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: phoneshopdb
@@ -204,7 +206,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,1,33990000,'PENDING','2026-05-13 09:50:35'),(2,2,28990000,'CONFIRMED','2026-05-13 09:50:35'),(3,3,22990000,'SHIPPED','2026-05-13 09:50:35'),(4,4,10990000,'DELIVERED','2026-05-13 09:50:35'),(5,5,4990000,'CANCELLED','2026-05-13 09:50:35');
+INSERT INTO `orders` VALUES (1,1,33990000,'CONFIRMED','2026-05-13 09:50:35'),(2,2,28990000,'CONFIRMED','2026-05-13 09:50:35'),(3,3,22990000,'SHIPPED','2026-05-13 09:50:35'),(4,4,10990000,'DELIVERED','2026-05-13 09:50:35'),(5,5,4990000,'CANCELLED','2026-05-13 09:50:35');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -420,7 +422,7 @@ CREATE TABLE `users` (
   `updated_at` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -429,7 +431,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'nguyen.an@gmail.com','hashed_password1','Nguyen Van An','USER',_binary '\0',NULL,NULL,'',NULL,NULL),(2,'tran.binh@gmail.com','hashed_password2','Tran Thi Binh','USER',_binary '\0',NULL,NULL,'',NULL,NULL),(3,'admin@shop.com','hashed_admin','Admin System','ADMIN',_binary '\0',NULL,NULL,'',NULL,NULL),(4,'le.hoa@gmail.com','hashed_password3','Le Thi Hoa','USER',_binary '\0',NULL,NULL,'',NULL,NULL),(5,'pham.tuan@gmail.com','hashed_password4','Pham Tuan','USER',_binary '\0',NULL,NULL,'',NULL,NULL);
+INSERT INTO `users` VALUES (1,'nguyen.an@gmail.com','hashed_password1','Nguyen Van An','USER',_binary '\0',NULL,NULL,'',NULL,NULL),(2,'tran.binh@gmail.com','hashed_password2','Tran Thi Binh','USER',_binary '\0',NULL,NULL,'',NULL,NULL),(3,'admin@shop.com','hashed_admin','Admin System','ADMIN',_binary '\0',NULL,NULL,'',NULL,NULL),(4,'le.hoa@gmail.com','hashed_password3','Le Thi Hoa','USER',_binary '\0',NULL,NULL,'',NULL,NULL),(5,'pham.tuan@gmail.com','hashed_password4','Pham Tuan','USER',_binary '\0',NULL,NULL,'',NULL,NULL),(51,'Admin1@gmail.com','jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=',NULL,'ADMIN',_binary '',NULL,1778740667241,'Đoàn Đức Dương','999999999',1778740667241);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -451,7 +453,7 @@ CREATE TABLE `users_seq` (
 
 LOCK TABLES `users_seq` WRITE;
 /*!40000 ALTER TABLE `users_seq` DISABLE KEYS */;
-INSERT INTO `users_seq` VALUES (1);
+INSERT INTO `users_seq` VALUES (101);
 /*!40000 ALTER TABLE `users_seq` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -464,4 +466,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-13 17:05:24
+-- Dump completed on 2026-05-15 21:49:00

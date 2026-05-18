@@ -14,6 +14,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Promotion extends PanacheEntity {
 
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Column(name = "description", length = 500)
+    private String description;
+
     @Column(name = "code", nullable = false, length = 20)
     private String code;
 
@@ -22,4 +28,16 @@ public class Promotion extends PanacheEntity {
 
     @Column(name = "expiry_date", nullable = false)
     private LocalDate expiryDate;
+
+    @Column(name = "banner")
+    private String banner;
+
+    @Column(name = "badge")
+    private String badge;
+
+    @Column(name = "conditions", length = 500)
+    private String conditions;
+
+    @Column(name = "category_id")
+    private Long categoryId;
 }

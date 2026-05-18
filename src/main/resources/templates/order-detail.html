@@ -1,4 +1,4 @@
-﻿{#include layout}
+{#include layout}
 {#title}Chi tiết Đơn hàng - Phone Store{/title}
 
 {#head}
@@ -66,29 +66,79 @@
 </div>
 
 <script>
-    // Script mô phỏng lấy dữ liệu, vì ở Client dùng JS thì nhớ dùng cộng chuỗi hoặc escape Qute nếu dùng template
-    document.addEventListener("DOMContentLoaded", function() {
-      const orderId = window.location.pathname.split('/').pop() || '9981';
-      document.getElementById('od-id').textContent = orderId;
-      document.getElementById('od-date').textContent = "14/05/2026";
-      document.getElementById('od-name').textContent = "Nguyễn Văn A";
-      document.getElementById('od-phone').textContent = "0987654321";
-      document.getElementById('od-address').textContent = "Hà Nội";
-      document.getElementById('od-payment').textContent = "Thanh toán khi nhận hàng (COD)";
-      document.getElementById('od-status').textContent = "Chờ xác nhận";
+    document.addEventListener("DOMContentLoaded", async function() {
+      if (!requireAuth("/orders")) return;
 
-      document.getElementById('od-items').innerHTML =
-        "<tr>" +
-          "<td>iPhone 15 Pro Max 256GB</td>" +
-          "<td>32.990.000 ₫</td>" +
-          "<td>1</td>" +
-          "<td style='font-weight:600;'>32.990.000 ₫</td>" +
-        "</tr>";
+      const pathParts = window.location.pathname.split('/');
+      const orderId = pathParts[pathParts.length - 1];
+      if (!orderId || isNaN(orderId)) {
+          showToast("Mã đơn hàng không hợp lệ", "error");
+          return;
+      }
 
-      document.getElementById('od-subtotal').textContent = "32.990.000 ₫";
-      document.getElementById('od-shipping').textContent = "30.000 ₫";
-      document.getElementById('od-total').textContent = "33.020.000 ₫";
+      try {
+          const res = await fetch(API + "/orders/" + orderId, {
+              headers: getAuthHeader()
+          });
+          if (res.ok) {
+              const order = await res.json();
+              renderOrderDetail(order);
+          } else {
+              showToast("Không tìm thấy đơn hàng", "error");
+          }
+      } catch (e) {
+          showToast("Lỗi kết nối", "error");
+      }
     });
+
+    function renderOrderDetail(order) {
+        document.getElementById('od-id').textContent = order.id;
+        document.getElementById('od-date').textContent = new Date(order.createdAt).toLocaleString('vi-VN');
+        document.getElementById('od-name').textContent = order.customerName || "N/A";
+        document.getElementById('od-phone').textContent = order.customerPhone || "N/A";
+        document.getElementById('od-address').textContent = order.shippingAddress || "N/A";
+        document.getElementById('od-payment').textContent = getPaymentLabel(order.paymentMethod);
+        document.getElementById('od-status').textContent = getStatusLabel(order.status);
+        
+        // Items
+        let itemsHtml = "";
+        let subtotal = 0;
+        if (order.items) {
+            order.items.forEach(item => {
+                const total = item.price * item.quantity;
+                subtotal += total;
+                itemsHtml += `
+                    <tr>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <img src="$\{item.product?.imageUrl || '/images/placeholder.png'}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">
+                                <span>$\{item.product?.name || 'Sản phẩm'}</span>
+                            </div>
+                        </td>
+                        <td>$\{formatPrice(item.price)}</td>
+                        <td>$\{item.quantity}</td>
+                        <td style="font-weight:600;">$\{formatPrice(total)}</td>
+                    </tr>
+                `;
+            });
+        }
+        document.getElementById('od-items').innerHTML = itemsHtml;
+
+        const shippingFee = 30000;
+        document.getElementById('od-subtotal').textContent = formatPrice(subtotal);
+        document.getElementById('od-shipping').textContent = formatPrice(shippingFee);
+        document.getElementById('od-total').textContent = formatPrice(order.totalAmount || (subtotal + shippingFee));
+    }
+
+    function getPaymentLabel(m) {
+        const labels = { 'cod': 'Thanh toán khi nhận hàng (COD)', 'vnpay': 'Ví VNPay / QR', 'momo': 'Ví MoMo', 'bank': 'Chuyển khoản ngân hàng' };
+        return labels[m] || m;
+    }
+
+    function getStatusLabel(s) {
+        const labels = { 'pending': 'Chờ xác nhận', 'confirmed': 'Đã xác nhận', 'shipped': 'Đang giao', 'delivered': 'Đã giao', 'cancelled': 'Đã hủy' };
+        return labels[s] || s;
+    }
 </script>
 {/body}
 {/include}

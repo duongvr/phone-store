@@ -237,6 +237,31 @@ public class UserResource {
   }
 
   /**
+   * Forgot password
+   */
+  @POST
+  @Path("/forgot-password")
+  public Response forgotPassword(ForgotPasswordRequest request) {
+    try {
+      if (request.getEmail() == null || request.getEmail().isEmpty()) {
+        return Response.status(Response.Status.BAD_REQUEST)
+            .entity(new ErrorResponse("Yêu cầu nhập email"))
+            .build();
+      }
+      userService.forgotPassword(request.getEmail());
+      return Response.ok(new SuccessResponse("Link khôi phục mật khẩu đã được gửi tới email của bạn")).build();
+    } catch (IllegalArgumentException e) {
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(new ErrorResponse(e.getMessage()))
+          .build();
+    } catch (Exception e) {
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Lỗi khi xử lý yêu cầu: " + e.getMessage()))
+          .build();
+    }
+  }
+
+  /**
    * Verify token
    */
   @POST
@@ -314,6 +339,23 @@ public class UserResource {
       this.userId = userId;
       this.valid = valid;
     }
+  }
+
+  /**
+   * Forgot password request class
+   */
+  public static class ForgotPasswordRequest {
+    public String email;
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+  }
+
+  /**
+   * Success response class
+   */
+  public static class SuccessResponse {
+    public String message;
+    public SuccessResponse(String message) { this.message = message; }
   }
 
   /**

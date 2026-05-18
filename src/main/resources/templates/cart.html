@@ -1,4 +1,4 @@
-﻿{#include layout}
+{#include layout}
 {#title}Giỏ hàng - Phone Store{/title}
 
 {#head}
@@ -8,6 +8,7 @@
     grid-template-columns: 2fr 1fr;
     gap: 30px;
     margin-bottom: 50px;
+    margin-top: 40px;
   }
 
   .cart-items,
@@ -39,20 +40,9 @@
     flex-shrink: 0;
   }
 
-  .item-details {
-    flex: 1;
-  }
-
-  .item-name {
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
-
-  .item-price {
-    color: #667eea;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
+  .item-details { flex: 1; }
+  .item-name { font-weight: 600; margin-bottom: 8px; }
+  .item-price { color: #667eea; font-weight: 700; margin-bottom: 10px; }
 
   .item-quantity {
     display: flex;
@@ -71,25 +61,24 @@
     font-weight: 600;
   }
 
-  .qty-btn:hover {
-    background: #f5f5f5;
-  }
-
   .item-remove {
     color: #e74c3c;
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
-  }
-
-  .item-remove:hover {
-    text-decoration: underline;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
   }
 
   .order-summary h3 {
     margin-bottom: 20px;
     border-bottom: 2px solid #f0f0f0;
     padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
   .summary-row {
@@ -109,7 +98,10 @@
   }
 
   .btn-checkout {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     width: 100%;
     padding: 15px;
     background: linear-gradient(135deg, #667eea, #764ba2);
@@ -130,12 +122,14 @@
   }
 
   .btn-continue {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     width: 100%;
     padding: 12px;
     background: white;
     color: #667eea;
-    text-align: center;
     text-decoration: none;
     border-radius: 8px;
     font-weight: 600;
@@ -144,47 +138,30 @@
     transition: all 0.3s;
   }
 
-  .btn-continue:hover {
-    background: #667eea;
-    color: white;
-  }
+  .btn-continue:hover { background: #667eea; color: white; }
 
   .empty-cart {
     text-align: center;
     padding: 60px 20px;
-  }
-
-  .empty-cart-icon {
-    font-size: 64px;
-    margin-bottom: 20px;
-  }
-
-  .empty-cart p {
-    color: #999;
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
   }
 
   @media (max-width: 768px) {
-    .cart-container {
-      grid-template-columns: 1fr;
-    }
-
-    .cart-item {
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .item-image {
-      width: 150px;
-      height: 150px;
-    }
+    .cart-container { grid-template-columns: 1fr; }
+    .cart-item { flex-direction: column; text-align: center; }
   }
 </style>
 {/head}
 
 {#body}
 <div class="page-title">
-  <h2>🛒 Giỏ hàng của bạn</h2>
+  <div style="display:flex; align-items:center; justify-content:center; gap:15px;">
+    <lord-icon src="https://cdn.lordicon.com/edkuxwya.json" trigger="loop" delay="2000" colors="primary:#ffffff" style="width:50px;height:50px"></lord-icon>
+    <h2>Giỏ hàng của bạn</h2>
+  </div>
 </div>
 
 <div class="container cart-container">
@@ -193,7 +170,10 @@
   </div>
 
   <div class="order-summary">
-    <h3>📋 Tóm tắt đơn hàng</h3>
+    <h3>
+      <lord-icon src="https://cdn.lordicon.com/nocovwne.json" trigger="hover" colors="primary:#333" style="width:28px;height:28px"></lord-icon>
+      Tóm tắt đơn hàng
+    </h3>
     <div id="cartSummary">
       <p style="text-align:center;color:#999;">Đang tải...</p>
     </div>
@@ -201,7 +181,6 @@
 </div>
 
 <script>
-  // Redirect nếu chưa đăng nhập
   document.addEventListener("DOMContentLoaded", function () {
     if (!requireAuth("/cart")) return;
     renderCart();
@@ -213,40 +192,58 @@
     const summaryContainer = document.getElementById("cartSummary");
 
     if (cart.length === 0) {
-      itemsContainer.innerHTML = '<div class="empty-cart"><div class="empty-cart-icon">🛒</div><p>Giỏ hàng của bạn đang trống</p><a href="/products" class="btn-continue">Tiếp tục mua sắm</a></div>';
+      itemsContainer.innerHTML = `
+        <div class="empty-cart">
+          <lord-icon src="https://cdn.lordicon.com/edkuxwya.json" trigger="loop" colors="primary:#667eea" style="width:100px;height:100px"></lord-icon>
+          <p>Giỏ hàng của bạn đang trống</p>
+          <a href="/products" class="btn-continue">
+            <lord-icon src="https://cdn.lordicon.com/vduvxptl.json" trigger="hover" colors="primary:#667eea" style="width:20px;height:20px"></lord-icon>
+            Tiếp tục mua sắm
+          </a>
+        </div>`;
       summaryContainer.innerHTML = '<p style="text-align:center;color:#999;">Giỏ hàng trống</p>';
       return;
     }
 
     let subtotal = 0;
+    // NGUYÊN TẮC 3: Chèn Lordicon trong JS
     itemsContainer.innerHTML = cart.map(item => {
       const itemTotal = (parseFloat(item.price) || 0) * (item.quantity || 1);
       subtotal += itemTotal;
-      return '<div class="cart-item">' +
-        '<img src="' + (item.image || '/images/placeholder.png') + '" alt="' + item.name + '" class="item-image">' +
-        '<div class="item-details">' +
-        '<div class="item-name">' + item.name + '</div>' +
-        '<div class="item-price">' + formatPrice(item.price) + '</div>' +
-        '<div class="item-quantity">' +
-        '<button class="qty-btn" onclick="changeQty(' + item.id + ', -1)">−</button>' +
-        '<span style="min-width:30px;text-align:center;">' + (item.quantity || 1) + '</span>' +
-        '<button class="qty-btn" onclick="changeQty(' + item.id + ', 1)">+</button>' +
-        '</div>' +
-        '<div style="color:#999;font-size:13px;">Tổng: ' + formatPrice(itemTotal) + '</div>' +
-        '<div class="item-remove" onclick="removeItem(' + item.id + ')">🗑️ Xóa</div>' +
-        '</div>' +
-        '</div>';
+      return `
+        <div class="cart-item">
+          <img src="$\{item.image || '/images/placeholder.png'}" alt="$\{item.name}" class="item-image">
+          <div class="item-details">
+            <div class="item-name">$\{item.name}</div>
+            <div class="item-price">$\{formatPrice(item.price)}</div>
+            <div class="item-quantity">
+              <button class="qty-btn" onclick="changeQty($\{item.id}, -1)">−</button>
+              <span style="min-width:30px;text-align:center;">$\{item.quantity || 1}</span>
+              <button class="qty-btn" onclick="changeQty($\{item.id}, 1)">+</button>
+            </div>
+            <div style="color:#999;font-size:13px;">Tổng: $\{formatPrice(itemTotal)}</div>
+            <div class="item-remove" onclick="removeItem($\{item.id})">
+              <lord-icon src="https://cdn.lordicon.com/skkahier.json" trigger="hover" colors="primary:#e74c3c" style="width:18px;height:18px"></lord-icon>
+              Xóa khỏi giỏ
+            </div>
+          </div>
+        </div>`;
     }).join('');
 
     const shippingFee = subtotal > 0 ? 30000 : 0;
     const total = subtotal + shippingFee;
 
-    summaryContainer.innerHTML =
-      '<div class="summary-row"><span>Tạm tính:</span><span>' + formatPrice(subtotal) + '</span></div>' +
-      '<div class="summary-row"><span>Phí vận chuyển:</span><span>' + formatPrice(shippingFee) + '</span></div>' +
-      '<div class="summary-row total"><span>Tổng cộng:</span><span>' + formatPrice(total) + '</span></div>' +
-      '<button class="btn-checkout" onclick="goToCheckout()">💳 Tiến hành thanh toán</button>' +
-      '<a href="/products" class="btn-continue">Tiếp tục mua sắm</a>';
+    summaryContainer.innerHTML = `
+      <div class="summary-row"><span>Tạm tính:</span><span>$\{formatPrice(subtotal)}</span></div>
+      <div class="summary-row"><span>Phí vận chuyển:</span><span>$\{formatPrice(shippingFee)}</span></div>
+      <div class="summary-row total"><span>Tổng cộng:</span><span>$\{formatPrice(total)}</span></div>
+      <button class="btn-checkout" onclick="goToCheckout()">
+        <lord-icon src="https://cdn.lordicon.com/yxyampgu.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
+        Tiến hành thanh toán
+      </button>
+      <a href="/products" class="btn-continue">
+        Tiếp tục mua sắm
+      </a>`;
   }
 
   function changeQty(productId, delta) {
@@ -271,9 +268,7 @@
     showToast("Đã xóa sản phẩm khỏi giỏ hàng", "info");
   }
 
-  function goToCheckout() {
-    window.location.href = "/checkout";
-  }
+  function goToCheckout() { window.location.href = "/checkout"; }
 </script>
 {/body}
 {/include}

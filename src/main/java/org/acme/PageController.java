@@ -14,6 +14,7 @@ import org.acme.service.OrderService;
 import org.acme.service.PromotionService;
 import org.acme.service.UserService;
 import org.acme.service.AddressService;
+import org.acme.service.NewsService;
 
 import java.util.List;
 
@@ -22,35 +23,77 @@ import java.util.List;
 public class PageController {
 
     // 1. INJECT CÁC TEMPLATE
-    @Inject Template index;
-    @Inject Template products;
-    @Inject @Location("product-detail") Template productDetail;
-    @Inject Template cart;
-    @Inject Template checkout;
-    @Inject Template login;
-    @Inject Template register;
-    @Inject Template profile;
-    @Inject Template addresses;
-    @Inject Template orders;
-    @Inject @Location("order-detail") Template orderDetail;
-    @Inject Template promotions;
-    @Inject Template wishlist;
+    @Inject
+    Template index;
+    @Inject
+    Template products;
+    @Inject
+    @Location("product-detail")
+    Template productDetail;
+    @Inject
+    Template cart;
+    @Inject
+    Template checkout;
+    @Inject
+    Template login;
+    @Inject
+    Template register;
+    @Inject
+    Template profile;
+    @Inject
+    Template addresses;
+    @Inject
+    Template orders;
+    @Inject
+    @Location("order-detail")
+    Template orderDetail;
+    @Inject
+    Template promotions;
+    @Inject
+    Template wishlist;
+    @Inject
+    Template news;
 
-    @Inject @Location("admin/admin-dashboard") Template adminDashboard;
-    @Inject @Location("admin/products") Template adminProducts;
-    @Inject @Location("admin/admin-product-form") Template adminProductForm;
-    @Inject @Location("admin/orders") Template adminOrders;
-    @Inject @Location("admin/admin-order-detail") Template adminOrderDetail;
-    @Inject @Location("admin/admin-users") Template adminUsers;
-    @Inject @Location("admin/admin-promotions") Template adminPromotions;
+    @Inject
+    @Location("admin/admin-dashboard")
+    Template adminDashboard;
+    @Inject
+    @Location("admin/products")
+    Template adminProducts;
+    @Inject
+    @Location("admin/admin-product-form")
+    Template adminProductForm;
+    @Inject
+    @Location("admin/orders")
+    Template adminOrders;
+    @Inject
+    @Location("admin/admin-order-detail")
+    Template adminOrderDetail;
+    @Inject
+    @Location("admin/admin-users")
+    Template adminUsers;
+    @Inject
+    @Location("admin/admin-promotions")
+    Template adminPromotions;
+    @Inject
+    @Location("admin/admin-categories")
+    Template adminCategories;
 
     // 2. INJECT CÁC SERVICE ĐỂ LẤY DỮ LIỆU
-    @Inject ProductService productService;
-    @Inject CategoryService categoryService;
-    @Inject OrderService orderService;
-    @Inject PromotionService promotionService;
-    @Inject UserService userService;
-    @Inject AddressService addressService;
+    @Inject
+    ProductService productService;
+    @Inject
+    CategoryService categoryService;
+    @Inject
+    OrderService orderService;
+    @Inject
+    PromotionService promotionService;
+    @Inject
+    UserService userService;
+    @Inject
+    AddressService addressService;
+    @Inject
+    NewsService newsService;
 
     // --- USER ROUTES ---
 
@@ -126,7 +169,12 @@ public class PageController {
         return wishlist.instance();
     }
 
-    // --- CÁC TRANG TĨNH HOẶC CHƯA CÓ SERVICE ---
+    @GET
+    @Path("news")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance newsPage() {
+        return news.data("newsList", newsService.getAllNews());
+    }
 
     @GET
     @Path("cart")
@@ -213,4 +261,11 @@ public class PageController {
     public TemplateInstance adminPromotionsPage() {
         return adminPromotions.data("promotions", promotionService.getPromotions());
     }
-}
+
+    @GET
+    @Path("admin/categories")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance adminCategoriesPage() {
+        return adminCategories.data("categories", categoryService.getAllCategories());
+    }
+}
