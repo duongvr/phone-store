@@ -144,6 +144,16 @@ public class UserService {
     userRepository.persist(user);
   }
 
+  @Transactional
+  public void forgotPassword(String email) {
+    User user = userRepository.findByEmail(email);
+    if (user == null) {
+      throw new IllegalArgumentException("Email không tồn tại trong hệ thống");
+    }
+    // Logic gửi email thực tế sẽ ở đây
+    System.out.println("Gửi link khôi phục mật khẩu tới: " + email);
+  }
+
   private UserDTO toDTO(User user) {
     return new UserDTO(
         user.id,

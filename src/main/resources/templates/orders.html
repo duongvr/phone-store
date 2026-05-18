@@ -1,4 +1,4 @@
-﻿{#include layout}
+{#include layout}
 {#title}Đơn hàng của tôi - Phone Store{/title}
 
 {#head}
@@ -7,6 +7,7 @@
     display: flex;
     gap: 30px;
     margin-bottom: 50px;
+    margin-top: 30px;
   }
 
   .sidebar {
@@ -20,17 +21,19 @@
     top: 100px;
   }
 
-  .sidebar-menu {
-    list-style: none;
-  }
+  .sidebar-menu { list-style: none; }
 
   .sidebar-menu li a {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     padding: 16px 20px;
     text-decoration: none;
     color: #555;
     border-left: 4px solid transparent;
     transition: all 0.3s;
+    font-size: 14px;
+    font-weight: 500;
   }
 
   .sidebar-menu li a:hover {
@@ -58,6 +61,9 @@
     border-bottom: 2px solid #f0f0f0;
     padding-bottom: 15px;
     font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
   .order-card {
@@ -68,9 +74,7 @@
     transition: all 0.3s;
   }
 
-  .order-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
+  .order-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
 
   .order-header {
     display: flex;
@@ -81,42 +85,23 @@
     gap: 10px;
   }
 
-  .order-id {
-    font-weight: 700;
-    font-size: 16px;
-  }
+  .order-id { font-weight: 700; font-size: 16px; }
 
   .status-badge {
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 13px;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
 
-  .status-pending {
-    background-color: #fff3cd;
-    color: #d35400;
-  }
-
-  .status-confirmed {
-    background-color: #cfe9ff;
-    color: #0066cc;
-  }
-
-  .status-shipped {
-    background-color: #e3f2fd;
-    color: #1976d2;
-  }
-
-  .status-delivered {
-    background-color: #d4edda;
-    color: #155724;
-  }
-
-  .status-cancelled {
-    background-color: #f8d7da;
-    color: #721c24;
-  }
+  .status-pending { background-color: #fff3cd; color: #d35400; }
+  .status-confirmed { background-color: #cfe9ff; color: #0066cc; }
+  .status-shipped { background-color: #e3f2fd; color: #1976d2; }
+  .status-delivered { background-color: #d4edda; color: #155724; }
+  .status-cancelled { background-color: #f8d7da; color: #721c24; }
 
   .order-info {
     display: grid;
@@ -127,59 +112,17 @@
     border-bottom: 1px solid #f0f0f0;
   }
 
-  .info-item {
-    font-size: 14px;
-  }
+  .info-item { font-size: 14px; }
+  .info-label { color: #999; font-size: 12px; text-transform: uppercase; margin-bottom: 4px; }
+  .info-value { font-weight: 600; color: #333; }
 
-  .info-label {
-    color: #999;
-    font-size: 12px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .info-value {
-    font-weight: 600;
-    color: #333;
-  }
-
-  .order-items {
-    margin-bottom: 15px;
-  }
-
-  .order-item {
-    display: flex;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid #f5f5f5;
-  }
-
-  .order-item:last-child {
-    border-bottom: none;
-  }
-
-  .item-image {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 4px;
-    flex-shrink: 0;
-  }
-
-  .item-details {
-    flex: 1;
-    font-size: 14px;
-  }
-
-  .item-name {
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .item-qty {
-    color: #999;
-    font-size: 12px;
-  }
+  .order-items { margin-bottom: 15px; }
+  .order-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+  .order-item:last-child { border-bottom: none; }
+  .item-image { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+  .item-details { flex: 1; font-size: 14px; }
+  .item-name { font-weight: 600; margin-bottom: 4px; }
+  .item-qty { color: #999; font-size: 12px; }
 
   .order-total {
     display: flex;
@@ -189,17 +132,9 @@
     border-top: 1px solid #f0f0f0;
   }
 
-  .total-amount {
-    font-size: 18px;
-    font-weight: 700;
-    color: #e74c3c;
-  }
+  .total-amount { font-size: 18px; font-weight: 700; color: #e74c3c; }
 
-  .order-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-  }
+  .order-actions { display: flex; gap: 10px; margin-top: 15px; }
 
   .btn-action {
     padding: 8px 16px;
@@ -209,100 +144,80 @@
     font-weight: 600;
     font-size: 13px;
     transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
-  .btn-view {
-    background: #667eea;
-    color: white;
-  }
-
-  .btn-view:hover {
-    background: #764ba2;
-  }
-
-  .btn-cancel {
-    background: #f5f5f5;
-    color: #e74c3c;
-    border: 1px solid #e74c3c;
-  }
-
-  .btn-cancel:hover {
-    background: #ffe6e6;
-  }
+  .btn-view { background: #667eea; color: white; }
+  .btn-cancel { background: #f5f5f5; color: #e74c3c; border: 1px solid #e74c3c; }
 
   .empty-state {
     text-align: center;
     padding: 60px 20px;
     color: #999;
-  }
-
-  .empty-state-icon {
-    font-size: 64px;
-    margin-bottom: 20px;
-  }
-
-  .filter-tabs {
     display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-    border-bottom: 2px solid #f0f0f0;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
   }
 
-  .filter-tab {
-    padding: 12px 16px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    color: #999;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s;
-  }
-
-  .filter-tab.active {
-    color: #667eea;
-    border-bottom-color: #667eea;
-  }
+  .filter-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; }
+  .filter-tab { padding: 12px 16px; background: none; border: none; cursor: pointer; font-weight: 600; color: #999; border-bottom: 3px solid transparent; transition: all 0.3s; }
+  .filter-tab.active { color: #667eea; border-bottom-color: #667eea; }
 
   @media (max-width: 768px) {
-    .account-container {
-      flex-direction: column;
-    }
-
-    .sidebar {
-      width: 100%;
-      position: static;
-    }
-
-    .order-header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .order-info {
-      grid-template-columns: 1fr;
-    }
+    .account-container { flex-direction: column; }
+    .sidebar { width: 100%; position: static; }
+    .order-header { flex-direction: column; align-items: flex-start; }
+    .order-info { grid-template-columns: 1fr; }
   }
 </style>
 {/head}
 
 {#body}
 <div class="page-title">
-  <h2>📦 Đơn hàng của tôi</h2>
+  <div style="display:flex; align-items:center; justify-content:center; gap:15px;">
+    <lord-icon src="https://cdn.lordicon.com/cllunfud.json" trigger="loop" delay="2000" colors="primary:#ffffff" style="width:50px;height:50px"></lord-icon>
+    <h2>Đơn hàng của tôi</h2>
+  </div>
 </div>
 
 <div class="container account-container">
   <aside class="sidebar">
     <ul class="sidebar-menu">
-      <li><a href="/profile">👤 Hồ sơ cá nhân</a></li>
-      <li><a href="/addresses">📍 Sổ địa chỉ</a></li>
-      <li><a href="/orders" class="active">📦 Đơn hàng của tôi</a></li>
-      <li><a href="/logout" style="color: #e74c3c;">🚪 Đăng xuất</a></li>
+      <li>
+        <a href="/profile">
+          <lord-icon src="https://cdn.lordicon.com/atzcyedn.json" trigger="hover" colors="primary:#555" style="width:20px;height:20px"></lord-icon>
+          Hồ sơ cá nhân
+        </a>
+      </li>
+      <li>
+        <a href="/addresses">
+          <lord-icon src="https://cdn.lordicon.com/njlzolhx.json" trigger="hover" colors="primary:#555" style="width:20px;height:20px"></lord-icon>
+          Sổ địa chỉ
+        </a>
+      </li>
+      <li>
+        <a href="/orders" class="active">
+          <lord-icon src="https://cdn.lordicon.com/dusieuvj.json" trigger="hover" colors="primary:#667eea" style="width:20px;height:20px"></lord-icon>
+          Đơn hàng của tôi
+        </a>
+      </li>
+      <li>
+        <a href="/logout" style="color: #e74c3c;">
+          <lord-icon src="https://cdn.lordicon.com/zifyscfa.json" trigger="hover" colors="primary:#e74c3c" style="width:20px;height:20px"></lord-icon>
+          Đăng xuất
+        </a>
+      </li>
     </ul>
   </aside>
 
   <main class="main-content">
-    <h3>Lịch sử đơn hàng</h3>
+    <h3>
+      <lord-icon src="https://cdn.lordicon.com/nocovwne.json" trigger="hover" colors="primary:#333" style="width:28px;height:28px"></lord-icon>
+      Lịch sử đơn hàng
+    </h3>
 
     <div class="filter-tabs">
       <button class="filter-tab active" onclick="filterOrders('all')">Tất cả</button>
@@ -318,7 +233,6 @@
   </main>
 </div>
 
-
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     if (!requireAuth("/orders")) return;
@@ -327,67 +241,60 @@
 
   async function loadOrders() {
     try {
-      const token = localStorage.getItem('jwt_token');
-      const response = await fetch('/api/orders', {
-        headers: { 'Authorization': 'Bearer ' + token }
+      const response = await fetch(API + '/orders', {
+        headers: getAuthHeader()
       });
-
       if (!response.ok) throw new Error('Failed to load orders');
       const orders = await response.json();
-
       renderOrders(orders);
     } catch (error) {
       console.error('Error loading orders:', error);
-      document.getElementById('ordersContainer').innerHTML = `
-        <div style="text-align:center;padding:40px;color:#e74c3c;">
-          <p>Lỗi tải đơn hàng. Vui lòng thử lại.</p>
-        </div>
-      `;
+      document.getElementById('ordersContainer').innerHTML = '<p style="text-align:center;padding:40px;color:#e74c3c;">Lỗi tải đơn hàng.</p>';
     }
   }
 
   function renderOrders(orders) {
     const container = document.getElementById('ordersContainer');
-
     if (!orders || orders.length === 0) {
       container.innerHTML = `
         <div class="empty-state">
-          <div class="empty-state-icon">📭</div>
+          <lord-icon src="https://cdn.lordicon.com/cllunfud.json" trigger="loop" colors="primary:#999" style="width:100px;height:100px"></lord-icon>
           <p>Bạn chưa có đơn hàng nào</p>
           <a href="/products" style="color: #667eea; font-weight: 600; text-decoration: none;">Bắt đầu mua sắm →</a>
-        </div>
-      `;
+        </div>`;
       return;
     }
 
     let html = '';
     orders.forEach(order => {
       let itemsHtml = '';
-      if (order.items && order.items.length > 0) {
+      if (order.items) {
         order.items.forEach(item => {
           itemsHtml += `
             <div class="order-item">
-              <img src="$\{item.product?.imageUrl || ''}" alt="$\{item.product?.name || ''}" class="item-image">
+              <img src="$\{item.product?.imageUrl || ''}" class="item-image">
               <div class="item-details">
                 <div class="item-name">$\{item.product?.name || 'Sản phẩm'}</div>
                 <div class="item-qty">x$\{item.quantity} - $\{formatPrice(item.price)}</div>
               </div>
-            </div>
-          `;
+            </div>`;
         });
-      } else {
-        itemsHtml = '<p style="color:#999;">Không có sản phẩm</p>';
       }
 
       const cancelButton = order.status === 'pending'
-        ? `<button class="btn-action btn-cancel" onclick="cancelOrder($\{order.id})">❌ Hủy đơn</button>`
+        ? `<button class="btn-action btn-cancel" onclick="cancelOrder($\{order.id})">
+             <lord-icon src="https://cdn.lordicon.com/nhfyvjkh.json" trigger="hover" colors="primary:#e74c3c" style="width:18px;height:18px"></lord-icon>
+             Hủy đơn
+           </button>`
         : '';
 
       html += `
         <div class="order-card">
           <div class="order-header">
             <div class="order-id">Đơn hàng #$\{order.id}</div>
-            <span class="status-badge status-$\{order.status}">$\{getStatusLabel(order.status)}</span>
+            <span class="status-badge status-$\{order.status}">
+              $\{getStatusLabel(order.status)}
+            </span>
           </div>
 
           <div class="order-info">
@@ -399,15 +306,9 @@
               <div class="info-label">Địa chỉ giao</div>
               <div class="info-value">$\{order.shippingAddress || 'N/A'}</div>
             </div>
-            <div class="info-item">
-              <div class="info-label">Phương thức thanh toán</div>
-              <div class="info-value">$\{getPaymentMethod(order.paymentMethod)}</div>
-            </div>
           </div>
 
-          <div class="order-items">
-            $\{itemsHtml}
-          </div>
+          <div class="order-items">$\{itemsHtml}</div>
 
           <div class="order-total">
             <span>Tổng cộng:</span>
@@ -415,72 +316,28 @@
           </div>
 
           <div class="order-actions">
-            <button class="btn-action btn-view" onclick="viewOrderDetail($\{order.id})">👁️ Xem chi tiết</button>
+            <button class="btn-action btn-view" onclick="viewOrderDetail($\{order.id})">
+              <lord-icon src="https://cdn.lordicon.com/tyvtvbcy.json" trigger="hover" colors="primary:#ffffff" style="width:18px;height:18px"></lord-icon>
+              Xem chi tiết
+            </button>
             $\{cancelButton}
           </div>
-        </div>
-      `;
+        </div>`;
     });
-
     container.innerHTML = html;
   }
 
   function getStatusLabel(status) {
-    const labels = {
-      'pending': 'Chờ xác nhận',
-      'confirmed': 'Đã xác nhận',
-      'shipped': 'Đang giao',
-      'delivered': 'Đã giao',
-      'cancelled': 'Đã hủy'
-    };
+    const labels = { 'pending': 'Chờ xác nhận', 'confirmed': 'Đã xác nhận', 'shipped': 'Đang giao', 'delivered': 'Đã giao', 'cancelled': 'Đã hủy' };
     return labels[status] || status;
-  }
-
-  function getPaymentMethod(method) {
-    const methods = {
-      'cod': 'Thanh toán khi nhận hàng',
-      'card': 'Thẻ tín dụng',
-      'ewallet': 'Ví điện tử',
-      'bank': 'Chuyển khoản ngân hàng'
-    };
-    return methods[method] || method;
   }
 
   function formatDate(dateString) {
     if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN');
+    return new Date(dateString).toLocaleDateString('vi-VN');
   }
 
-  function filterOrders(status) {
-    document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
-  }
-
-  function viewOrderDetail(orderId) {
-    window.location.href = '/orders/' + orderId;
-  }
-
-  async function cancelOrder(orderId) {
-    if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) return;
-    try {
-      const token = localStorage.getItem('jwt_token');
-      const res = await fetch(`/api/orders/$\{orderId}/status?status=cancelled`, {
-        method: "PATCH",
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-      if (res.ok) {
-        showToast("Đã hủy đơn hàng thành công", "success");
-        setTimeout(() => window.location.reload(), 1000);
-      } else {
-        showToast("Không thể hủy đơn hàng", "error");
-      }
-    } catch (e) {
-      showToast("Lỗi kết nối", "error");
-    }
-  }
+  function viewOrderDetail(orderId) { window.location.href = '/orders/' + orderId; }
 </script>
-
-
 {/body}
 {/include}

@@ -1,4 +1,4 @@
-﻿{#include layout}
+{#include layout}
 {#title}Đăng nhập - Phone Store{/title}
 
 {#head}
@@ -231,10 +231,30 @@
     <h2>Chào mừng trở lại! 👋</h2>
     <p>Đăng nhập để trải nghiệm mua sắm điện thoại chính hãng với ưu đãi độc quyền.</p>
     <ul class="feature-list">
-      <li>✅ Hàng chính hãng 100%</li>
-      <li>🚚 Giao hàng nhanh toàn quốc</li>
-      <li>🛡️ Bảo hành 12 tháng</li>
-      <li>💰 Giá tốt nhất thị trường</li>
+      <li>
+        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+        <lord-icon src="https://cdn.lordicon.com/jzhvjabw.json" trigger="hover" colors="primary:#a39cf4"
+          style="width:25px;height:25px">
+        </lord-icon> Hàng chính hãng 100%
+      </li>
+      <li>
+        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+        <lord-icon src="https://cdn.lordicon.com/gcpwxsvp.json" trigger="hover"
+          colors="primary:#c69cf4,secondary:#9cc2f4" style="width:25px;height:25px">
+        </lord-icon> Giao hàng nhanh toàn quốc
+      </li>
+      <li>
+        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+        <lord-icon src="https://cdn.lordicon.com/ojgowmvw.json" trigger="hover"
+          colors="primary:#c69cf4,secondary:#9cc2f4" style="width:25px;height:25px">
+        </lord-icon> Bảo hành 12 tháng
+      </li>
+      <li>
+        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+        <lord-icon src="https://cdn.lordicon.com/dcekivfq.json" trigger="hover"
+          colors="primary:#c69cf4,secondary:#9cc2f4" style="width:25px;height:25px">
+        </lord-icon> Giá tốt nhất thị trường
+      </li>
     </ul>
   </div>
 
@@ -249,7 +269,12 @@
       <div class="form-group">
         <label for="email">Email</label>
         <div class="input-wrapper">
-          <span>📧</span>
+          <span>
+            <script src="https://cdn.lordicon.com/lordicon.js"></script>
+            <lord-icon src="https://cdn.lordicon.com/jzhvjabw.json" trigger="hover" colors="primary:#16c72e"
+              style="width:25px;height:25px">
+            </lord-icon>
+          </span>
           <input type="email" id="email" placeholder="example@email.com" required autocomplete="email">
         </div>
       </div>
@@ -257,7 +282,12 @@
       <div class="form-group">
         <label for="password">Mật khẩu</label>
         <div class="input-wrapper">
-          <span>🔒</span>
+          <span>
+            <script src="https://cdn.lordicon.com/lordicon.js"></script>
+            <lord-icon src="https://cdn.lordicon.com/mzcaikdp.json" trigger="hover"
+              colors="primary:#c69cf4,secondary:#9cc2f4" style="width:25px;height:25px">
+            </lord-icon>
+          </span>
           <input type="password" id="password" placeholder="Nhập mật khẩu" required autocomplete="current-password">
         </div>
       </div>
@@ -269,7 +299,12 @@
         <a href="/forgot-password">Quên mật khẩu?</a>
       </div>
 
-      <button type="submit" class="btn-submit" id="loginBtn">🔑 Đăng nhập</button>
+      <button type="submit" class="btn-submit" id="loginBtn">
+        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+        <lord-icon src="https://cdn.lordicon.com/bqlcwfjd.json" trigger="hover"
+          colors="primary:#c69cf4,secondary:#9cc2f4" style="width:25px;height:25px">
+        </lord-icon> Đăng nhập
+      </button>
     </form>
 
     <div class="auth-footer">
@@ -309,6 +344,7 @@
 
       if (response.ok) {
         localStorage.setItem("jwt_token", data.token);
+        localStorage.setItem("user_id", data.userId);
         successMsg.textContent = "Đăng nhập thành công! Đang chuyển hướng...";
         successMsg.style.display = "block";
         setTimeout(() => {
