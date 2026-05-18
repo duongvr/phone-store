@@ -1,4 +1,4 @@
-﻿{#include layout}
+{#include layout}
 {#title}Hồ sơ cá nhân - Phone Store{/title}
 
 {#head}
@@ -244,7 +244,7 @@
       <li><a href="/profile" class="active">👤 Hồ sơ cá nhân</a></li>
       <li><a href="/addresses">📍 Sổ địa chỉ</a></li>
       <li><a href="/orders">📦 Đơn hàng của tôi</a></li>
-      <li><a href="/logout" style="color: #e74c3c;">🚪 Đăng xuất</a></li>
+      <li><a href="#" onclick="logout(); return false;" style="color: #e74c3c;">🚪 Đăng xuất</a></li>
     </ul>
   </aside>
 
@@ -329,8 +329,13 @@
   });
 
   async function loadProfileData() {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      showToast("Vui lòng đăng nhập để xem thông tin", "error");
+      return;
+    }
     try {
-      const res = await fetch(API + "/users/profile", { headers: getAuthHeader() });
+      const res = await fetch(API + "/users/" + userId, { headers: getAuthHeader() });
       if (res.ok) {
         const user = await res.json();
         document.getElementById('fullName').value = user.fullName || '';
@@ -339,6 +344,8 @@
         document.getElementById('profileName').textContent = user.fullName || 'Người dùng';
         document.getElementById('profileEmail').textContent = user.email || '';
         document.getElementById('profileAvatar').textContent = (user.fullName || 'U').charAt(0).toUpperCase();
+      } else {
+        showToast("Không thể tải thông tin tài khoản", "error");
       }
     } catch (e) {
       showToast("Không thể tải thông tin", "error");
@@ -347,12 +354,14 @@
 
   async function updateProfile(event) {
     event.preventDefault();
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return;
     const formData = {
       fullName: document.getElementById('fullName').value,
       phone: document.getElementById('phone').value
     };
     try {
-      const res = await fetch(API + "/users/profile", {
+      const res = await fetch(API + "/users/" + userId, {
         method: "PUT",
         headers: getAuthHeader(),
         body: JSON.stringify(formData)
@@ -369,6 +378,8 @@
   }
 
   function changePassword() {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return;
     const oldPwd = prompt('Nhập mật khẩu hiện tại:');
     if (!oldPwd) return;
     const newPwd = prompt('Nhập mật khẩu mới (tối thiểu 6 ký tự):');
@@ -376,8 +387,8 @@
     const confirmPwd = prompt('Xác nhận mật khẩu mới:');
     if (newPwd !== confirmPwd) { showToast("Mật khẩu xác nhận không khớp", "error"); return; }
 
-    fetch(API + "/users/password", {
-      method: "PUT",
+    fetch(API + "/users/" + userId + "/change-password", {
+      method: "POST",
       headers: getAuthHeader(),
       body: JSON.stringify({ oldPassword: oldPwd, newPassword: newPwd })
     }).then(res => {

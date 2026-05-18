@@ -117,7 +117,7 @@
           <lord-icon src="https://cdn.lordicon.com/atzcyedn.json" trigger="hover" colors="primary:#475569" style="width:24px;height:24px"></lord-icon>
           <strong style="color: #475569; font-size: 14px;">Quản trị viên</strong>
         </div>
-        <a href="/logout" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px;">
+        <a href="#" onclick="logout(); return false;" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px;">
           <lord-icon src="https://cdn.lordicon.com/zifyscfa.json" trigger="hover" colors="primary:#ef4444" style="width:20px;height:20px"></lord-icon>
           Đăng xuất
         </a>
@@ -153,6 +153,12 @@
         case 'CANCELLED': return { bg: '#fef2f2', color: '#b91c1c', label: 'Đã hủy' };
         default: return { bg: '#f1f5f9', color: '#475569', label: status };
       }
+    }
+
+    function logout() {
+      localStorage.removeItem("jwt_token");
+      localStorage.removeItem("user_id");
+      window.location.href = "/";
     }
   </script>
 </body>
