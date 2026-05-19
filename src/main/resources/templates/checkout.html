@@ -443,7 +443,7 @@
     if (!requireAuth("/checkout")) return;
     
     // Load Cart
-    cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    cart = JSON.parse(localStorage.getItem(getCartKey()) || "[]");
     if (cart.length === 0) {
       showToast("Giỏ hàng trống!", "warning");
       setTimeout(() => window.location.href = "/cart", 1000);
@@ -584,6 +584,7 @@
     btn.innerHTML = '<lord-icon src="https://cdn.lordicon.com/xjovfocc.json" trigger="loop" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon> Đang xử lý...';
 
     const orderData = {
+      userId: parseInt(localStorage.getItem("user_id")),
       addressId: selectedAddressId,
       paymentMethod: selectedPaymentMethod,
       notes: document.getElementById("orderNotes").value,
@@ -609,8 +610,8 @@
         const addr = addresses.find(a => a.id === selectedAddressId);
         document.getElementById("successName").textContent = addr ? addr.fullName : "Quý khách";
         
-        // Clear cart
-        localStorage.removeItem("cart");
+        // Clear cart của user này
+        localStorage.removeItem(getCartKey());
         updateCartBadge();
         
         showToast("🎉 Đặt hàng thành công!", "success");

@@ -12,4 +12,15 @@ public class OrderItemDTO {
     private Long orderId;
     private Long productId;
     private int quantity;
+    private Double price;
+    private String productName;
+    private String productImage;
+    private ProductDTO product;
+
+    public OrderItemDTO(Long id, Long orderId, Long productId, int quantity) {
+        this.id = id;
+        this.orderId = orderId;
+        this.productId = productId;
+        this.quantity = quantity;
+    }
 }
