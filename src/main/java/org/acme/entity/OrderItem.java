@@ -27,5 +27,8 @@ public class OrderItem extends PanacheEntity {
 
     @Column(nullable = false)
     private int quantity;
+
+    @Column(name = "price")
+    private Double price;
 }
 

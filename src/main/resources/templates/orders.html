@@ -205,7 +205,7 @@
         </a>
       </li>
       <li>
-        <a href="/logout" style="color: #e74c3c;">
+        <a href="#" onclick="logout(); return false;" style="color: #e74c3c;">
           <lord-icon src="https://cdn.lordicon.com/zifyscfa.json" trigger="hover" colors="primary:#e74c3c" style="width:20px;height:20px"></lord-icon>
           Đăng xuất
         </a>
@@ -236,14 +236,32 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     if (!requireAuth("/orders")) return;
-    loadOrders();
+
+    // user_id có thể chưa được ghi vào localStorage (vì loadUserInfo() là async)
+    // Thử ngay, nếu chưa có thì đợi tối đa 1.5 giây
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      setTimeout(loadOrders, 700);
+    } else {
+      loadOrders();
+    }
   });
 
   async function loadOrders() {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      document.getElementById('ordersContainer').innerHTML =
+        '<p style="text-align:center;padding:40px;color:#e74c3c;">Không xác định được tài khoản. Vui lòng <a href="/login">đăng nhập lại</a>.</p>';
+      return;
+    }
     try {
-      const response = await fetch(API + '/orders', {
+      const response = await fetch(API + '/orders/user/' + userId, {
         headers: getAuthHeader()
       });
+      if (response.status === 401) {
+        window.location.href = "/login?redirect=/orders";
+        return;
+      }
       if (!response.ok) throw new Error('Failed to load orders');
       const orders = await response.json();
       renderOrders(orders);

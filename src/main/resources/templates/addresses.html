@@ -430,9 +430,9 @@
                     </div>
                 </div>
                 <div class="address-actions">
-                    $\{ !addr.isDefault ? \`<button class="btn-action" onclick="setDefault($\{addr.id})" title="Đặt làm mặc định">📌</button>\` : ''}
-                    <button class="btn-action" onclick="editAddress($\{ addr.id})" title="Chỉnh sửa">✏️</button>
-                    <button class="btn-action btn-delete" onclick="deleteAddress($\{ addr.id})" title="Xóa">🗑️</button>
+                    $\{ !addr.isDefault ? '<button class="btn-action" onclick="setDefault(' + addr.id + ')" title="Đặt làm mặc định">📌</button>' : ''}
+                    <button class="btn-action" onclick="editAddress(${ addr.id })" title="Chỉnh sửa">✏️</button>
+                    <button class="btn-action btn-delete" onclick="deleteAddress(${ addr.id })" title="Xóa">🗑️</button>
                 </div>
             </div>
         `).join('');

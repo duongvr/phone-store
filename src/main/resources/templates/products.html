@@ -238,10 +238,12 @@
 </div>
 
 <script>
+  let allProducts = [];
+  let currentSort = '';
+
   document.addEventListener("DOMContentLoaded", function () {
     loadCategories();
     loadProducts();
-    restoreFilters();
   });
 
   async function loadCategories() {
@@ -261,6 +263,7 @@
             </div>`;
         });
         container.innerHTML = html;
+        restoreFilters();
       }
     } catch (e) { console.error(e); }
   }
@@ -268,55 +271,149 @@
   async function loadProducts() {
     try {
       const params = new URLSearchParams(window.location.search);
-      let url = '/api/products?page=0&pageSize=20';
-      if (params.has('categories')) {
-        params.get('categories').split(',').forEach(cat => { url += '&categoryId=' + cat; });
+      let url = '/api/products?page=0&pageSize=100';
+      if (params.has('search')) {
+        url = '/api/products/search?keyword=' + encodeURIComponent(params.get('search')) + '&page=0&pageSize=100';
+      } else if (params.has('category')) {
+        const catId = params.get('category');
+        url = '/api/products/category/' + catId + '?page=0&pageSize=100';
       }
 
       const response = await fetch(url);
-      let products = await response.json();
+      if (response.ok) {
+        allProducts = await response.json();
+        
+        // Auto check category checkbox if 'category' parameter is present in URL
+        if (params.has('category')) {
+          const catId = params.get('category');
+          setTimeout(() => {
+            const cb = document.querySelector(`input[name="category"][value="$\{catId}"]`);
+            if (cb) {
+              cb.checked = true;
+            }
+          }, 300);
+        }
 
-      // Filter/Sort logic... (giữ nguyên logic cũ)
-
-      document.getElementById('productCount').textContent = products.length;
-
-      if (products && products.length > 0) {
-        let html = '';
-        products.forEach(product => {
-          const isFav = isFavorite(product.id);
-          const ratingHtml = product.rating && product.rating > 0
-            ? `<div class="product-rating">
-                 <lord-icon src="https://cdn.lordicon.com/mdgrhyca.json" trigger="loop" delay="2000" colors="primary:#f39c12" style="width:16px;height:16px"></lord-icon>
-                 $\{product.rating}/5
-               </div>`
-            : '';
-          
-          html += `
-            <div class="product-card">
-              <button class="btn-wishlist" onclick="toggleWishlist($\{product.id}); this.classList.toggle('active')">
-                <lord-icon src="https://cdn.lordicon.com/rjzlnunf.json" trigger="click" colors="primary:#e74c3c,secondary:#e74c3c" style="width:24px;height:24px"></lord-icon>
-              </button>
-              <img src="$\{product.imageUrl || '/images/placeholder.png'}" class="product-image">
-              <div class="product-body">
-                <div class="product-name">$\{product.name}</div>
-                <div class="product-price">$\{formatPrice(product.price)}</div>
-                $\{ratingHtml}
-                <a href="/products/$\{product.id}" class="btn-detail">
-                   <lord-icon src="https://cdn.lordicon.com/tyvtvbcy.json" trigger="hover" colors="primary:#ffffff" style="width:18px;height:18px"></lord-icon>
-                   Chi tiết
-                </a>
-              </div>
-            </div>`;
-        });
-        document.getElementById('productsContainer').innerHTML = html;
+        applyFilters();
       } else {
-        document.getElementById('productsContainer').innerHTML = `
-          <div class="empty-state" style="grid-column:1/-1;">
-            <lord-icon src="https://cdn.lordicon.com/cllunfud.json" trigger="loop" colors="primary:#999" style="width:80px;height:80px"></lord-icon>
-            <p>Không tìm thấy sản phẩm nào phù hợp.</p>
-          </div>`;
+        console.error("Failed to load products");
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function restoreFilters() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('categories')) {
+      const catIds = params.get('categories').split(',');
+      catIds.forEach(id => {
+        const cb = document.querySelector(`input[name="category"][value="$\{id}"]`);
+        if (cb) cb.checked = true;
+      });
+      applyFilters();
+    }
+  }
+
+  function applyFilters() {
+    // 1. Get selected category IDs
+    const checkedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked'))
+      .map(cb => parseInt(cb.value));
+
+    // 2. Get selected price ranges
+    const checkedPrices = Array.from(document.querySelectorAll('input[name="price"]:checked'))
+      .map(cb => cb.value);
+
+    // 3. Get selected rating
+    const checkedRatings = Array.from(document.querySelectorAll('input[name="rating"]:checked'))
+      .map(cb => parseInt(cb.value));
+
+    // Filter products
+    let filtered = [...allProducts];
+
+    // Filter by categories
+    if (checkedCategories.length > 0) {
+      filtered = filtered.filter(p => checkedCategories.includes(p.categoryId));
+    }
+
+    // Filter by price ranges
+    if (checkedPrices.length > 0) {
+      filtered = filtered.filter(p => {
+        return checkedPrices.some(range => {
+          if (range === '0-5') return p.price < 5000000;
+          if (range === '5-10') return p.price >= 5000000 && p.price <= 10000000;
+          if (range === '10-20') return p.price >= 10000000 && p.price <= 20000000;
+          if (range === '20+') return p.price > 20000000;
+          return true;
+        });
+      });
+    }
+
+    // Filter by ratings
+    if (checkedRatings.length > 0) {
+      const minRating = Math.min(...checkedRatings);
+      filtered = filtered.filter(p => (p.rating || 0) >= minRating);
+    }
+
+    // Sort products
+    if (currentSort === 'newest') {
+      filtered.sort((a, b) => b.id - a.id);
+    } else if (currentSort === 'price-asc') {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (currentSort === 'price-desc') {
+      filtered.sort((a, b) => b.price - a.price);
+    } else if (currentSort === 'rating') {
+      filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    }
+
+    renderProductsList(filtered);
+  }
+
+  function sortProducts(value) {
+    currentSort = value;
+    applyFilters();
+  }
+
+  function renderProductsList(products) {
+    document.getElementById('productCount').textContent = products.length;
+    const container = document.getElementById('productsContainer');
+    
+    if (products && products.length > 0) {
+      let html = '';
+      products.forEach(product => {
+        const isFav = isFavorite(product.id);
+        const ratingHtml = product.rating && product.rating > 0
+          ? `<div class="product-rating">
+               <lord-icon src="https://cdn.lordicon.com/mdgrhyca.json" trigger="loop" delay="2000" colors="primary:#f39c12" style="width:16px;height:16px"></lord-icon>
+               $\{product.rating}/5
+             </div>`
+          : '';
+        
+        html += `
+          <div class="product-card">
+            <button class="btn-wishlist $\{isFav ? 'active' : ''}" onclick="toggleWishlist($\{product.id}); this.classList.toggle('active')">
+              <lord-icon src="https://cdn.lordicon.com/rjzlnunf.json" trigger="click" colors="primary:#e74c3c,secondary:#e74c3c" style="width:24px;height:24px"></lord-icon>
+            </button>
+            <img src="$\{product.imageUrl || '/images/placeholder.png'}" class="product-image">
+            <div class="product-body">
+              <div class="product-name">$\{product.name}</div>
+              <div class="product-price">$\{formatPrice(product.price)}</div>
+              $\{ratingHtml}
+              <a href="/products/$\{product.id}" class="btn-detail">
+                 <lord-icon src="https://cdn.lordicon.com/tyvtvbcy.json" trigger="hover" colors="primary:#ffffff" style="width:18px;height:18px"></lord-icon>
+                 Chi tiết
+              </a>
+            </div>
+          </div>`;
+      });
+      container.innerHTML = html;
+    } else {
+      container.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <lord-icon src="https://cdn.lordicon.com/cllunfud.json" trigger="loop" colors="primary:#999" style="width:80px;height:80px"></lord-icon>
+          <p>Không tìm thấy sản phẩm nào phù hợp.</p>
+        </div>`;
+    }
   }
 </script>
 {/body}
