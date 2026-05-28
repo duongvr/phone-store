@@ -264,6 +264,88 @@
   .specs-table td { padding: 12px 0; }
   .specs-table td:first-child { font-weight: 600; width: 30%; color: #555; }
 
+  .reviews-section {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 50px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
+  .review-item {
+    border-bottom: 1px solid #eee;
+    padding: 20px 0;
+  }
+  .review-item:last-child {
+    border-bottom: none;
+  }
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .reviewer-name {
+    font-weight: 700;
+    color: #333;
+  }
+  .review-date {
+    color: #999;
+    font-size: 13px;
+  }
+  .review-rating {
+    color: #f39c12;
+    margin-bottom: 10px;
+  }
+  .review-content {
+    color: #555;
+    line-height: 1.6;
+  }
+  .review-form-container {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #eee;
+  }
+  .review-form-textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    resize: vertical;
+    font-family: inherit;
+  }
+  .btn-submit-review {
+    padding: 10px 20px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .btn-submit-review:hover {
+    background: #5a6fe0;
+  }
+  .rating-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+  }
+  .rating-input select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+  }
+  .login-prompt {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 20px;
+  }
+
   @media (max-width: 768px) {
     .product-detail-container { grid-template-columns: 1fr; gap: 20px; }
     .product-title { font-size: 20px; }
@@ -323,6 +405,34 @@
     <div id="description" class="tab-content"><p id="descriptionText">-</p></div>
     <div id="warranty" class="tab-content"><p id="warrantyText">-</p></div>
   </div>
+
+  <div class="reviews-section" id="reviewsSection">
+    <h3 style="font-size: 22px; margin-bottom: 20px;">Đánh giá sản phẩm</h3>
+    <div id="reviewsList">
+      <div style="text-align: center; color: #999;">Đang tải đánh giá...</div>
+    </div>
+    
+    <div class="review-form-container" id="reviewFormContainer" style="display: none;">
+      <h4 style="margin-bottom: 15px;">Viết đánh giá của bạn</h4>
+      <form id="reviewForm" onsubmit="submitReview(event)">
+        <div class="rating-input">
+          <label style="font-weight: 600;">Đánh giá:</label>
+          <select id="reviewRating" required>
+            <option value="5">5 Sao (Tuyệt vời)</option>
+            <option value="4">4 Sao (Tốt)</option>
+            <option value="3">3 Sao (Bình thường)</option>
+            <option value="2">2 Sao (Kém)</option>
+            <option value="1">1 Sao (Rất kém)</option>
+          </select>
+        </div>
+        <textarea id="reviewContent" class="review-form-textarea" rows="4" placeholder="Nhận xét của bạn về sản phẩm này..." required></textarea>
+        <button type="submit" class="btn-submit-review">Gửi đánh giá</button>
+      </form>
+    </div>
+    <div class="login-prompt" id="loginPrompt" style="display: none;">
+      <p>Vui lòng <a href="/login" style="color: #667eea; font-weight: 600; text-decoration: none;">đăng nhập</a> để viết đánh giá.</p>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -330,7 +440,95 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     loadProductDetail();
+    loadReviews();
+    checkLoginForReview();
   });
+
+  function checkLoginForReview() {
+    const userId = localStorage.getItem("user_id");
+    if (userId) {
+      document.getElementById('reviewFormContainer').style.display = 'block';
+      document.getElementById('loginPrompt').style.display = 'none';
+    } else {
+      document.getElementById('reviewFormContainer').style.display = 'none';
+      document.getElementById('loginPrompt').style.display = 'block';
+    }
+  }
+
+  async function loadReviews() {
+    try {
+      const response = await fetch('/api/reviews/product/' + productId);
+      const reviews = await response.json();
+      const reviewsList = document.getElementById('reviewsList');
+      if (reviews.length === 0) {
+        reviewsList.innerHTML = '<div style="text-align: center; color: #999;">Chưa có đánh giá nào cho sản phẩm này.</div>';
+        return;
+      }
+      
+      let html = '';
+      for (const review of reviews) {
+        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        const date = new Date(review.createdAt).toLocaleDateString('vi-VN');
+        html += `
+          <div class="review-item">
+            <div class="review-header">
+              <div class="reviewer-name">Khách hàng #$\{review.userId}</div>
+              <div class="review-date">$\{date}</div>
+            </div>
+            <div class="review-rating">$\{stars}</div>
+            <div class="review-content">$\{review.content}</div>
+          </div>
+        `;
+      }
+      reviewsList.innerHTML = html;
+    } catch (e) {
+      console.error(e);
+      document.getElementById('reviewsList').innerHTML = '<div style="color: red; text-align: center;">Lỗi khi tải đánh giá</div>';
+    }
+  }
+
+  async function submitReview(e) {
+    e.preventDefault();
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      showToast('Vui lòng đăng nhập để đánh giá!', 'error');
+      return;
+    }
+    
+    const rating = parseInt(document.getElementById('reviewRating').value);
+    const content = document.getElementById('reviewContent').value.trim();
+    
+    if (!content) {
+      showToast('Vui lòng nhập nội dung đánh giá!', 'error');
+      return;
+    }
+    
+    const dto = {
+      productId: parseInt(productId),
+      userId: parseInt(userId),
+      rating: rating,
+      content: content
+    };
+    
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dto)
+      });
+      
+      if (response.ok) {
+        showToast('Đã gửi đánh giá thành công!', 'success');
+        document.getElementById('reviewContent').value = '';
+        loadReviews();
+      } else {
+        showToast('Lỗi khi gửi đánh giá', 'error');
+      }
+    } catch (error) {
+      console.error(error);
+      showToast('Đã xảy ra lỗi', 'error');
+    }
+  }
 
   async function loadProductDetail() {
     try {

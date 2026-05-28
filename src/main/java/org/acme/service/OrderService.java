@@ -18,7 +18,9 @@ import org.acme.repository.AddressRepository;
 import org.acme.repository.OrderItemRepository;
 import org.acme.repository.OrderRepository;
 import org.acme.repository.ProductRepository;
+import org.acme.repository.PromotionRepository;
 import org.acme.repository.UserRepository;
+import org.acme.entity.Promotion;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,6 +44,9 @@ public class OrderService {
 
     @Inject
     AddressRepository addressRepository;
+
+    @Inject
+    PromotionRepository promotionRepository;
 
     // ==========================================
     // CÁC PHƯƠNG THỨC MỚI BỔ SUNG
@@ -104,7 +109,34 @@ public class OrderService {
             orderItemRepository.persist(orderItem);
         }
 
-        order.setTotalAmount(totalAmount);
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        if (request.getPromotionCode() != null && !request.getPromotionCode().trim().isEmpty()) {
+            Promotion promo = promotionRepository.find("code", request.getPromotionCode().trim()).firstResult();
+            if (promo == null) {
+                throw new BadRequestException("Mã khuyến mãi không hợp lệ");
+            }
+            if (promo.getExpiryDate() != null && promo.getExpiryDate().isBefore(java.time.LocalDate.now())) {
+                throw new BadRequestException("Mã khuyến mãi đã hết hạn");
+            }
+            
+            // Assuming discountValue > 100 means direct amount, otherwise percentage
+            if (promo.getDiscountValue().compareTo(new BigDecimal("100")) > 0) {
+                discountAmount = promo.getDiscountValue();
+            } else {
+                // percentage
+                discountAmount = totalAmount.multiply(promo.getDiscountValue()).divide(new BigDecimal("100"));
+            }
+            
+            // check min order value? Not in Promotion.java, skipping.
+            if (discountAmount.compareTo(totalAmount) > 0) {
+                discountAmount = totalAmount; // Cannot discount more than total
+            }
+            
+            order.setPromotionCode(promo.getCode());
+            order.setDiscountAmount(discountAmount);
+        }
+        
+        order.setTotalAmount(totalAmount.subtract(discountAmount));
         return mapToOrderDTO(order);
     }
 
@@ -238,6 +270,8 @@ public class OrderService {
                 shippingAddress,
                 customerName,
                 customerPhone,
+                order.getDiscountAmount(),
+                order.getPromotionCode(),
                 itemDTOs
         );
     }

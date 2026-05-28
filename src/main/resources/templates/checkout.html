@@ -387,8 +387,29 @@
                   style="width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; min-height: 80px; font-family: inherit;"></textarea>
       </div>
 
+      <div style="margin-top: 30px;">
+        <div class="section-title" style="font-size: 16px;">🎟 Mã khuyến mãi</div>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="promoCode" placeholder="Nhập mã giảm giá..." style="flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+          <button class="btn-next" style="flex: 0; padding: 10px 20px; white-space: nowrap;" onclick="applyPromo()">Áp dụng</button>
+        </div>
+        <div id="promoMessage" style="margin-top: 10px; font-size: 14px;"></div>
+      </div>
+
       <div class="section-card" style="margin-top: 30px; background: #f8f9fa; box-shadow: none; border: 1px solid #eee;">
-        <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 700;">
+        <div style="display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 10px;">
+          <span>Tạm tính:</span>
+          <span id="checkoutSubtotal">0 ₫</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 10px; color: #666;">
+          <span>Phí giao hàng:</span>
+          <span>30.000 ₫</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 15px; color: #2ecc71; display: none;" id="discountRow">
+          <span>Giảm giá:</span>
+          <span id="checkoutDiscount">-0 ₫</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; border-top: 2px dashed #ddd; padding-top: 15px;">
           <span>Tổng tiền thanh toán:</span>
           <span id="finalTotal" style="color: #e74c3c;">0 ₫</span>
         </div>
@@ -437,6 +458,7 @@
   let addresses = [];
   let selectedAddressId = null;
   let selectedPaymentMethod = 'cod';
+  let appliedPromo = null;
   const shippingFee = 30000;
 
   document.addEventListener("DOMContentLoaded", async function() {
@@ -474,8 +496,64 @@
     }).join('');
     
     document.getElementById("step1Subtotal").textContent = formatPrice(subtotal);
-    document.getElementById("finalTotal").textContent = formatPrice(subtotal + shippingFee);
-    document.getElementById("successTotal").textContent = formatPrice(subtotal + shippingFee);
+    updateTotals();
+  }
+
+  function updateTotals() {
+    let subtotal = 0;
+    cart.forEach(item => {
+      subtotal += (parseFloat(item.price) || 0) * (item.quantity || 1);
+    });
+
+    let discount = 0;
+    if (appliedPromo) {
+       if (appliedPromo.discountValue > 100) {
+           discount = appliedPromo.discountValue;
+       } else {
+           discount = (subtotal * appliedPromo.discountValue) / 100;
+       }
+       if (discount > subtotal) discount = subtotal;
+       
+       document.getElementById("discountRow").style.display = "flex";
+       document.getElementById("checkoutDiscount").textContent = "-" + formatPrice(discount);
+    } else {
+       document.getElementById("discountRow").style.display = "none";
+    }
+
+    const finalTotal = subtotal + shippingFee - discount;
+    document.getElementById("checkoutSubtotal").textContent = formatPrice(subtotal);
+    document.getElementById("finalTotal").textContent = formatPrice(finalTotal);
+    document.getElementById("successTotal").textContent = formatPrice(finalTotal);
+  }
+
+  async function applyPromo() {
+    const code = document.getElementById("promoCode").value.trim();
+    const msg = document.getElementById("promoMessage");
+    if (!code) {
+      msg.textContent = "Vui lòng nhập mã";
+      msg.style.color = "#e74c3c";
+      return;
+    }
+
+    try {
+      const res = await fetch(API + "/promotions/validate?code=" + code);
+      if (res.ok) {
+        appliedPromo = await res.json();
+        msg.textContent = "Áp dụng thành công mã: " + appliedPromo.title;
+        msg.style.color = "#2ecc71";
+        updateTotals();
+        showToast("Áp dụng mã giảm giá thành công", "success");
+      } else {
+        const err = await res.json();
+        appliedPromo = null;
+        msg.textContent = err.message || "Mã không hợp lệ";
+        msg.style.color = "#e74c3c";
+        updateTotals();
+      }
+    } catch (e) {
+       msg.textContent = "Lỗi kết nối";
+       msg.style.color = "#e74c3c";
+    }
   }
 
   async function loadAddresses() {
@@ -588,6 +666,7 @@
       addressId: selectedAddressId,
       paymentMethod: selectedPaymentMethod,
       notes: document.getElementById("orderNotes").value,
+      promotionCode: appliedPromo ? appliedPromo.code : null,
       items: cart.map(i => ({ productId: i.id, quantity: i.quantity }))
     };
 

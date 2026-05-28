@@ -31,6 +31,38 @@
     </table>
 </div>
 
+<!-- Modal Sửa Khuyến Mãi -->
+<div id="editPromoModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:30px; border-radius:12px; width:500px; max-width:90%;">
+        <h3 style="margin-top:0;">Sửa Khuyến Mãi</h3>
+        <input type="hidden" id="editPromoId">
+        <div style="margin-bottom:15px;">
+            <label style="display:block; margin-bottom:5px;">Mã / Code</label>
+            <input type="text" id="editPromoCode" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+        </div>
+        <div style="margin-bottom:15px;">
+            <label style="display:block; margin-bottom:5px;">Tiêu đề</label>
+            <input type="text" id="editPromoTitle" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+        </div>
+        <div style="margin-bottom:15px;">
+            <label style="display:block; margin-bottom:5px;">Giá trị giảm (Nếu > 100 coi là VND, < 100 coi là %)</label>
+            <input type="number" id="editPromoValue" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+        </div>
+        <div style="margin-bottom:15px;">
+            <label style="display:block; margin-bottom:5px;">Ngày hết hạn</label>
+            <input type="date" id="editPromoDate" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+        </div>
+        <div style="margin-bottom:20px;">
+            <label style="display:block; margin-bottom:5px;">Mô tả</label>
+            <textarea id="editPromoDesc" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;" rows="3"></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button class="btn btn-secondary" onclick="closeEditModal()" style="padding:8px 15px; border:1px solid #ddd; background:#f8f9fa; border-radius:4px; cursor:pointer;">Hủy</button>
+            <button class="btn btn-primary" onclick="savePromo()" style="padding:8px 15px; border:none; background:#667eea; color:white; border-radius:4px; cursor:pointer;">Lưu thay đổi</button>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         loadPromotions();
@@ -42,10 +74,10 @@
             let url = API + "/promotions";
             if (type) url += "?type=" + type;
             
-            const res = await fetch(url);
+            const res = await fetch(url, { headers: getAuthHeader() });
             if (res.ok) {
-                const promos = await res.json();
-                renderPromotions(promos);
+                allPromos = await res.json();
+                renderPromotions(allPromos);
             } else {
                 // Fallback or mock if API doesn't exist yet
                 renderMockPromotions();
@@ -56,6 +88,8 @@
         }
     }
 
+    let allPromos = [];
+
     function renderPromotions(promos) {
         const body = document.getElementById("promotionsBody");
         if (!promos || promos.length === 0) {
@@ -65,8 +99,8 @@
 
         let html = '';
         promos.forEach(p => {
-            const date = p.endDate ? new Date(p.endDate).toLocaleDateString('vi-VN') : 'Vô thời hạn';
-            const isActive = !p.endDate || new Date(p.endDate) > new Date();
+            const date = p.expiryDate ? new Date(p.expiryDate).toLocaleDateString('vi-VN') : 'Vô thời hạn';
+            const isActive = !p.expiryDate || new Date(p.expiryDate) >= new Date(new Date().setHours(0,0,0,0));
             
             html += `
                 <tr>
@@ -75,11 +109,11 @@
                         <span style="font-size:12px; color:#666;">$\{p.description || ''}</span>
                     </td>
                     <td>$\{p.discountValue > 100 ? formatPrice(p.discountValue) : p.discountValue + '%'}</td>
-                    <td>$\{p.minOrderValue ? 'Đơn từ ' + formatPrice(p.minOrderValue) : 'Mọi đơn'}</td>
+                    <td>Mọi đơn</td>
                     <td>$\{date}</td>
                     <td><span style="color: $\{isActive ? '#27ae60' : '#e74c3c'}; font-weight: 600;">$\{isActive ? 'Đang chạy' : 'Hết hạn'}</span></td>
                     <td>
-                        <button class="btn btn-primary" style="font-size: 12px;" onclick="showToast('Sắp có', 'info')">Sửa</button>
+                        <button class="btn btn-primary" style="font-size: 12px; padding: 5px 10px;" onclick="openEditModal($\{p.id})">Sửa</button>
                     </td>
                 </tr>
             `;
@@ -89,10 +123,65 @@
 
     function renderMockPromotions() {
         const mock = [
-            { id: 1, code: 'WELCOME100', description: 'Giảm 100k cho user mới', discountValue: 100000, minOrderValue: 500000, endDate: '2026-12-31', type: 'VOUCHER' },
-            { id: 2, title: 'Siêu sale hè', description: 'Giảm 10% toàn shop', discountValue: 10, minOrderValue: 0, endDate: '2026-08-30', type: 'BANNER' }
+            { id: 1, code: 'WELCOME100', title: 'Chào bạn mới', description: 'Giảm 100k cho user mới', discountValue: 100000, expiryDate: '2026-12-31' },
+            { id: 2, code: 'SUMMER', title: 'Siêu sale hè', description: 'Giảm 10% toàn shop', discountValue: 10, expiryDate: '2026-08-30' }
         ];
+        allPromos = mock;
         renderPromotions(mock);
+    }
+
+    function openEditModal(id) {
+        const promo = allPromos.find(p => p.id === id);
+        if (!promo) return;
+        
+        document.getElementById('editPromoId').value = promo.id;
+        document.getElementById('editPromoCode').value = promo.code || '';
+        document.getElementById('editPromoTitle').value = promo.title || '';
+        document.getElementById('editPromoValue').value = promo.discountValue || '';
+        document.getElementById('editPromoDate').value = promo.expiryDate || '';
+        document.getElementById('editPromoDesc').value = promo.description || '';
+        
+        document.getElementById('editPromoModal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editPromoModal').style.display = 'none';
+    }
+
+    async function savePromo() {
+        const id = document.getElementById('editPromoId').value;
+        const promo = allPromos.find(p => p.id == id);
+        if (!promo) return;
+
+        const updated = {
+            ...promo,
+            code: document.getElementById('editPromoCode').value,
+            title: document.getElementById('editPromoTitle').value,
+            discountValue: parseFloat(document.getElementById('editPromoValue').value) || 0,
+            expiryDate: document.getElementById('editPromoDate').value,
+            description: document.getElementById('editPromoDesc').value
+        };
+
+        try {
+            const res = await fetch(API + "/promotions/" + id, {
+                method: "PUT",
+                headers: {
+                    ...getAuthHeader(),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updated)
+            });
+
+            if (res.ok) {
+                showToast("Cập nhật thành công!", "success");
+                closeEditModal();
+                loadPromotions();
+            } else {
+                showToast("Lỗi khi cập nhật!", "error");
+            }
+        } catch (e) {
+            showToast("Lỗi kết nối", "error");
+        }
     }
 </script>
 {/body}

@@ -1,4 +1,4 @@
-﻿{#include layout}
+{#include layout}
 {#title}Khuyến mãi hot - Phone Store{/title}
 
 {#head}
@@ -277,8 +277,8 @@
 
         <div class="promo-footer">
           <div class="promo-date">
-            {#if promo.endDate}
-            ⏰ Hết hạn: {promo.endDate}
+            {#if promo.expiryDate}
+            ⏰ Hết hạn: {promo.expiryDate}
             {/if}
           </div>
           <a href="/products?category={promo.categoryId}" class="btn-promo">

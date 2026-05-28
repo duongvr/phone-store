@@ -7,6 +7,7 @@ public class CreateOrderRequestDTO {
     private Long addressId;
     private String paymentMethod;
     private String notes;
+    private String promotionCode;
     private List<OrderItemRequest> items;
 
     public Long getUserId() {
@@ -39,6 +40,14 @@ public class CreateOrderRequestDTO {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getPromotionCode() {
+        return promotionCode;
+    }
+
+    public void setPromotionCode(String promotionCode) {
+        this.promotionCode = promotionCode;
     }
 
     public List<OrderItemRequest> getItems() {

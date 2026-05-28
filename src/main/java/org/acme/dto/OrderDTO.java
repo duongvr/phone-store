@@ -24,5 +24,7 @@ public class OrderDTO {
     private String shippingAddress;
     private String customerName;
     private String customerPhone;
+    private BigDecimal discountAmount;
+    private String promotionCode;
     private List<OrderItemDTO> items;
 }

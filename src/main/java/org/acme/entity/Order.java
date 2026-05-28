@@ -40,6 +40,12 @@ public class Order extends PanacheEntity {
     @Column(name = "customer_phone", length = 20)
     private String customerPhone;
 
+    @Column(name = "discount_amount", precision = 10, scale = 0)
+    private BigDecimal discountAmount;
+
+    @Column(name = "promotion_code", length = 50)
+    private String promotionCode;
+
     public Order() {
     }
 
@@ -134,5 +140,21 @@ public class Order extends PanacheEntity {
 
     public void setCustomerPhone(String customerPhone) {
         this.customerPhone = customerPhone;
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    public String getPromotionCode() {
+        return promotionCode;
+    }
+
+    public void setPromotionCode(String promotionCode) {
+        this.promotionCode = promotionCode;
     }
 }
